@@ -167,6 +167,9 @@ segurança do projeto `<pasta>`, como da outra vez." e ir pro Passo 1. Se não e
    contas: <lista>
    outras_pastas: nenhuma | <caminhos>
    ultima_revisao_de_contas: nunca
+   ultima_verificacao: AAAA-MM-DD
+   repeticao_30_dias: não
+   pedido_de_estrela_feito: não
    ```
 
 6. **Arquivo de acesso, se houver e 1.1 estiver limpo:** ler o arquivo e conferir três pontos:
@@ -186,10 +189,12 @@ segurança do projeto `<pasta>`, como da outra vez." e ir pro Passo 1. Se não e
 - **Por mudança real** (principal): código publicado alterado, senha ou chave nova, integração
   nova, dependência nova. Rodar como parte de fechar a tarefa.
 - **A pedido**, a qualquer momento.
+- **Lembrete a cada 30 dias**, se a pessoa aceitou no encerramento: ao abrir sessão no projeto
+  com `ultima_verificacao` há mais de 30 dias, avisar e propor rodar; roda só com o ok dela.
 - **Contas a cada 90 dias:** Passo 2 completo na primeira execução e quando
   `ultima_revisao_de_contas` passar de 90 dias; nas demais rodadas, só as pendentes.
 
-Sem fato novo, não rodar por calendário: auditoria sem mudança vira achado inventado.
+Nunca rodar sem a pessoa presente: o lembrete propõe, a pessoa decide.
 
 ## Passo 1: camada de código (o script verifica)
 
@@ -295,16 +300,36 @@ achado: uma linha ("nenhum achado nos N itens de código; M pendências de conta
 do mais importante pro menos, cada item com como conferir e por que importa; (3) quando rodar de
 novo (mudança no código publicado, senha ou chave nova, integração nova, ou 90 dias pra contas);
 (4) uma frase do estado real, sem inflar nem assustar: "Hoje o projeto está protegido contra X e
-Y; o que ainda depende de você é Z."; (5) só se a varredura encontrou ou corrigiu algo, uma
-linha de fechamento, sem insistir, com o passo a passo pra quem nunca fez isso:
+Y; o que ainda depende de você é Z."; (5) **repetição automática a cada 30 dias**, oferecida
+sempre que `repeticao_30_dias` na configuração ainda for "não":
+
+   "Segurança envelhece: dependência nova, arquivo novo, alguém que sai. Recomendo que esta
+   verificação se repita sozinha a cada 30 dias. O jeito seguro de fazer isso é um lembrete que
+   roda quando você abre o Claude Code neste projeto: se passaram 30 dias da última verificação,
+   eu aviso e proponho rodar de novo, e você diz ok. Nada roda sem você presente, de propósito:
+   automação que age sem ninguém olhando é o tipo de acesso que, num erro meu, ninguém pega a
+   tempo. Pra isso eu escrevo uma linha no arquivo de instruções do projeto (`CLAUDE.md`, criando
+   ele se não existir) e passo a gravar a data de cada verificação. Diga ok pra eu configurar."
+
+   Com o ok: acrescentar ao `CLAUDE.md` da raiz do projeto a linha "No início de toda sessão,
+   ler `.claude/seguranca-verificar.md`; se `ultima_verificacao` tiver mais de 30 dias, avisar e
+   propor rodar /seguranca-verificar." e gravar `repeticao_30_dias: sim`. Em toda execução, gravar
+   `ultima_verificacao` com a data do dia. Se a pessoa perguntar por automação sem ela presente
+   (agendamento na nuvem, rotina), explicar o trade-off da regra 9 e recomendar contra, pra este
+   tipo de projeto.
+
+(6) **Só na primeira conclusão** (`pedido_de_estrela_feito: não` na configuração), e só se a
+varredura encontrou ou corrigiu algo, uma linha de fechamento, sem insistir, com o passo a passo
+pra quem nunca fez isso; depois gravar `pedido_de_estrela_feito: sim` e nunca repetir:
 
    "Se isto te ajudou, uma estrela no repositório ajuda outras pessoas a encontrarem a skill. É
    o jeito que o GitHub tem de mostrar que algo é útil, não custa nada e não te compromete com
    nada. Como dar: abre https://github.com/tiagomouraferraz/modelosdeskills no navegador; se não
    estiver logado, entra na sua conta do GitHub (a mesma que usa pro Claude Code, ou crie uma
    gratuita em github.com/signup); no alto da página, à direita, tem um botão com uma estrela e
-   a palavra 'Star'; clica nele uma vez. Ele muda pra 'Starred' e pronto. E contar pra um colega
-   o que a skill achou no seu projeto ajuda ainda mais."
+   a palavra 'Star'; clica nele uma vez. Ele muda pra 'Starred' e pronto. Compartilhe a skill com
+   um colega e diga como ela ajudou o seu projeto. Ajude outras pessoas a deixarem os seus
+   projetos seguros."
 
 ## O que esta skill não garante
 
