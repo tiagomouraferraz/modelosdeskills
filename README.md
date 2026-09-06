@@ -8,7 +8,7 @@ Skills de sistema pra Claude Code criadas por um Gestor de Tráfego Pago desde 2
 2. Descompacte dentro da pasta de skills do seu Claude Code. O zip já vem com a pasta no nome certo.
    - Windows: `C:\Users\SEU-USUARIO\.claude\skills\`
    - Mac ou Linux: `~/.claude/skills/`
-   - A pasta `.claude` é oculta. Se não aparecer, digite o caminho direto na barra de endereço do explorador de arquivos.
+   - A pasta `.claude` é oculta. Se não aparecer, digite o caminho direto na barra de endereço do explorador de arquivos. Se a pasta `skills` não existir dentro dela, crie com esse nome.
    - Alternativa: descompacte dentro de `.claude\skills\` de um projeto específico, e a skill só existe naquele projeto.
 3. Abra o Claude Code e chame a skill pelo nome, com barra na frente (ex: `/nome-da-skill`). Na primeira chamada ela faz a configuração inicial.
 
