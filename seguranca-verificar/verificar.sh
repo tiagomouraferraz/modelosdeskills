@@ -2,7 +2,7 @@
 # verificar.sh — parte da skill seguranca-verificar (github.com/tiagomouraferraz/modelosdeskills)
 #
 # Só leitura. A única escrita possível é o arquivo de referência
-# .claude/seguranca-verificar-baseline.txt, e só quando pedido por --baseline-criar
+# .seguranca-verificar/baseline.txt, e só quando pedido por --baseline-criar
 # ou --baseline-atualizar. Nunca imprime o valor de uma senha ou chave: toda saída
 # de segredo é cortada em arquivo e linha.
 #
@@ -80,7 +80,7 @@ if [ "$MODO" = protecao ]; then
     echo 'exit 0'
   } > "$HK"
   chmod +x "$HK" 2>/dev/null
-  out "protecao_de_commit" "CORRETO" "hook pre-commit instalado em $HK (bloqueia segredo e arquivo de credencial em todo commit, inclusive feito fora do Claude Code)"
+  out "protecao_de_commit" "CORRETO" "hook pre-commit instalado em $HK (bloqueia segredo e arquivo de credencial em todo commit, inclusive feito fora do assistente)"
   exit 0
 fi
 
@@ -190,7 +190,7 @@ fi
 
 # 1.7 integridade do arquivo de acesso
 if [ -n "$ACESSO" ]; then
-  BL=".claude/seguranca-verificar-baseline.txt"
+  BL=".seguranca-verificar/baseline.txt"
   if [ ! -f "$ACESSO" ]; then
     out "1.7 integridade do arquivo de acesso" "ERRO" "arquivo nao encontrado: $ACESSO (caminho relativo a $RAIZ)"
   else
@@ -210,7 +210,7 @@ if [ -n "$ACESSO" ]; then
     nl=$(wc -l < "$TMP/lin" | tr -d ' ')
     if [ "$BASE_ACAO" = atualizar ] || { [ ! -f "$BL" ] && [ "$BASE_ACAO" = criar ]; }; then
       if [ "$LIMPO11" = 1 ]; then
-        mkdir -p .claude
+        mkdir -p .seguranca-verificar
         { echo "# seguranca-verificar: hashes das $nl linhas de seguranca de $ACESSO ($FONTE). Sem texto de codigo."; cat "$TMP/h"; } > "$BL"
         out "1.7 integridade do arquivo de acesso" "INFO" "referencia $( [ "$BASE_ACAO" = criar ] && echo criada || echo atualizada ) com $nl linha(s) de seguranca, fonte: $FONTE. Sem comparacao nesta rodada"
       else

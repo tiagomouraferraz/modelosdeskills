@@ -1,7 +1,8 @@
 ---
 name: seguranca-verificar
 description: >
-  Assistente de segurança pra projeto de Claude Code de quem não programa. Verifica, com script de
+  Assistente de segurança pra projeto feito com assistente de IA (Claude Code, Codex, Cursor,
+  Gemini CLI ou outro que leia instrução e rode shell) por quem não programa. Verifica, com script de
   leitura, senha ou chave escrita em código ou guardada no histórico do git, arquivo de credencial
   rastreado ou fora do .gitignore, dependência sem versão fixada, proteção de commit, arquivo de
   dado de cliente no git, e integridade do arquivo que controla login e acesso contra uma
@@ -17,10 +18,28 @@ description: >
 
 # /seguranca-verificar
 
-Assistente de segurança pra quem usa o Claude Code sem ser programador. O agente executa e
+Assistente de segurança pra quem usa assistente de IA sem ser programador. O agente executa e
 explica; a pessoa lê, entende e diz "ok". Os comandos moram em `verificar.sh`, na mesma pasta
 deste arquivo; as fontes de cada checagem, em `bases.md`. Texto entre aspas é o que se diz pra
 pessoa, do jeito que está, adaptando só o que estiver entre `<...>`.
+
+## Portabilidade
+
+Escrita pra qualquer assistente de IA que leia um arquivo de instruções e execute comandos de
+shell. Foi criada e testada no Claude Code, que aparece como exemplo concreto; nada aqui depende
+dele. Onde o texto cita algo específico, o assistente traduz pro equivalente da ferramenta em uso:
+
+| Termo neste arquivo | Claude Code | Outros assistentes |
+| --- | --- | --- |
+| pasta de skills | `~/.claude/skills/` ou `.claude/skills/` do projeto | Codex: `.agents/skills/`; sem suporte a skill: o conteúdo deste arquivo como regra do projeto, com `verificar.sh` na mesma pasta |
+| arquivo de instruções do projeto | `CLAUDE.md` | `AGENTS.md` (Codex, Cursor e outros); se não existir nenhum, criar `AGENTS.md` |
+| modo que executa sem confirmar (evitar) | "Bypass permissions" | Codex: aprovação "never"/full-auto; Cursor: auto-run; Gemini CLI: yolo; qualquer "não perguntar" |
+| lista de aprovação manual | `permissions.ask` em `.claude/settings.json` | o equivalente de "sempre pedir confirmação" da ferramenta; se não houver, o próprio modo de confirmação |
+| conector / integração | conectores da conta claude.ai | a integração equivalente da ferramenta, se existir |
+| chamar a skill | `/seguranca-verificar` | pedir "use a skill seguranca-verificar" ou abrir o `SKILL.md` e seguir |
+
+Os arquivos que a skill grava no projeto ficam numa pasta neutra, `.seguranca-verificar/` na raiz
+(`config.md` e `baseline.txt`), pra funcionar igual em qualquer ferramenta.
 
 ## Como conduzir
 
@@ -56,7 +75,7 @@ certo, diga ok pra eu seguir; se não, me corrige." O "ok" pedido nunca é solto
 6. **Ação executável é oferecida na hora, em primeira pessoa, com motivo.** "Isso eu consigo fazer
    por você agora. Recomendo, porque <motivo>. Por alterar o projeto, preciso só do seu ok."
    Pendência só quando depende de painel de conta ou decisão de negócio, ou quando a pessoa preferir
-   depois. Proibido "pede ao Claude Code" ou "isso fica fora desta verificação" pra algo que o
+   depois. Proibido "pede ao assistente" (ou à ferramenta pelo nome) ou "isso fica fora desta verificação" pra algo que o
    próprio agente executa.
 7. **Tom de assistente conversando.** Uma ideia por mensagem, termo técnico sempre com meia linha
    de explicação, avisar o que vai acontecer antes de acontecer, nunca listar comando pra pessoa
@@ -72,18 +91,18 @@ certo, diga ok pra eu seguir; se não, me corrige." O "ok" pedido nunca é solto
    é dito com todas as letras:** mais acesso significa que um erro do agente, ou uma instrução
    maliciosa escondida em algo que ele leia, alcança mais coisa (o mesmo acesso que permite
    conferir permite alterar). Por isso todo aumento de acesso vem junto com a proteção
-   correspondente: conector com ação de escrita entra na lista de aprovação manual do Claude Code
-   (`permissions.ask` no `.claude/settings.json` do projeto), e o modo de permissão fica em Auto
-   ou padrão, nunca Bypass (ver item 1.10). Só ferramenta oficial da plataforma ou do próprio
-   Claude Code; nunca de terceiro desconhecido. Casos comuns desta skill:
+   correspondente: conector com ação de escrita entra na lista de aprovação manual do assistente (ver
+   Portabilidade), e o modo de permissão fica no que pede confirmação, nunca no que executa sem
+   perguntar (ver item 1.10). Só ferramenta oficial da plataforma ou do próprio assistente; nunca
+   de terceiro desconhecido. Casos comuns desta skill:
    - **Repositório privado, Dependabot, secret scanning (Passo 2):** hoje é pergunta. Com a
      ferramenta de linha de comando oficial do GitHub (`gh`, em cli.github.com, instalador pra
      Windows e Mac; depois `gh auth login` no terminal, seguindo as telas) o assistente consulta
      isso sozinho. Acesso: à conta GitHub da pessoa, leitura e escrita nos repositórios dela.
-   - **Planilha compartilhada com "qualquer pessoa com o link" (Passo 2):** hoje é pergunta. Com o
-     conector do Google Drive ligado na conta claude.ai (claude.ai > Configurações > Conectores >
-     Google Drive > Conectar, autorizando com a conta Google), o assistente lê as permissões do
-     arquivo. Acesso: aos arquivos do Drive da pessoa.
+   - **Planilha compartilhada com "qualquer pessoa com o link" (Passo 2):** hoje é pergunta. Com a
+     integração do Google Drive que o assistente oferecer (no Claude Code: claude.ai >
+     Configurações > Conectores > Google Drive > Conectar, autorizando com a conta Google), o
+     assistente lê as permissões do arquivo. Acesso: aos arquivos do Drive da pessoa.
    - **Quem abre o app publicado (Passo 2):** hoje é pergunta. Algumas hospedagens têm ferramenta
      oficial de linha de comando (ex: Vercel CLI, `npm i -g vercel` e `vercel login`) que mostra a
      configuração de proteção; o Streamlit Cloud não tem, e continua sendo conferido no painel.
@@ -91,9 +110,9 @@ certo, diga ok pra eu seguir; se não, me corrige." O "ok" pedido nunca é solto
 ## Segurança do próprio processo
 
 - **Só leitura, com exceções nomeadas e sempre autorizadas:** os dois arquivos da skill em
-  `.claude/` do projeto, linha no `.gitignore`, tirar arquivo de dado do versionamento (sem apagar
+  `.seguranca-verificar/` do projeto, linha no `.gitignore`, tirar arquivo de dado do versionamento (sem apagar
   da pasta), a proteção mínima de commit (um arquivo na pasta do git), e a lista de aprovação
-  manual em `.claude/settings.json` (item 1.10). Nada mais é alterado.
+  manual do assistente (item 1.10). Nada mais é alterado.
 - **Nenhum valor de senha ou chave aparece no chat, na configuração ou na referência.** O script
   corta a saída em arquivo e linha, mascara credencial em endereço de repositório, e a referência
   guarda só hash.
@@ -112,7 +131,7 @@ certo, diga ok pra eu seguir; se não, me corrige." O "ok" pedido nunca é solto
 
 ## Passo 0: primeira execução
 
-Se `.claude/seguranca-verificar.md` existir na raiz do projeto: "Oi de novo. Vou conferir a
+Se `.seguranca-verificar/config.md` existir na raiz do projeto: "Oi de novo. Vou conferir a
 segurança do projeto `<pasta>`, como da outra vez." e ir pro Passo 1. Se não existir:
 
 1. **Abertura, uma mensagem só, terminando num único ok:**
@@ -130,7 +149,7 @@ segurança do projeto `<pasta>`, como da outra vez." e ir pro Passo 1. Se não e
    a pasta não for essa, me avisa. Se estiver tudo certo, diga ok pra eu começar a olhar."
 
    Exceção, a única em que a abertura trava: pasta vazia, ou só com os arquivos desta skill. "Essa
-   pasta parece ser a da própria skill (ou está vazia). Abre o Claude Code na pasta do projeto que
+   pasta parece ser a da própria skill (ou está vazia). Abre o assistente na pasta do projeto que
    você quer proteger e me chama de novo."
 
 2. **Depois do ok:** "Olhando agora, leva alguns segundos." Rodar `verificar.sh --inspecionar` e
@@ -157,7 +176,7 @@ segurança do projeto `<pasta>`, como da outra vez." e ir pro Passo 1. Se não e
      descobrir: se você baixou algum repositório do GitHub pra este projeto, ele está em outra
      pasta, com o nome do repositório. Se não souber, sigo só com esta e anoto. Diga ok pra eu seguir, ou me passa o caminho da outra pasta."
 
-5. Gravar `.claude/seguranca-verificar.md`, nunca com senha ou chave:
+5. Gravar `.seguranca-verificar/config.md`, nunca com senha ou chave:
 
    ```
    # Configuração da skill seguranca-verificar (sem senha ou chave aqui, nunca)
@@ -213,7 +232,7 @@ por item, `ITEM|ESTADO|EVIDÊNCIA`.
 | 1.7 | Integridade do arquivo de acesso contra a referência em hash, comparando a versão publicada ou, sem remoto, a cópia local, dizendo qual | alerta: se a pessoa não reconhece a mudança, investigar `git log -p` antes de tudo; se reconhece, `--baseline-atualizar` |
 | 1.8 | Arquivo de dado (csv, xlsx, pdf) rastreado | lê só o cabeçalho; coluna de dado pessoal = tratar como real; oferece tirar do versionamento e proteger no `.gitignore`, mesmo se a pessoa disser que é fictício |
 | 1.9 | Variável pública de frontend com nome sensível | explica que vai pro navegador de qualquer visitante; a correção é mover pro servidor |
-| 1.10 | Modo de permissão do próprio Claude Code (o assistente lê `.claude/settings.json` do projeto e `~/.claude/settings.json`) | Bypass ligado (`"defaultMode": "bypassPermissions"`, ou a pessoa disser que usa "bypass permissions") = problema; conector com ação de escrita fora de `permissions.ask` = problema. Texto abaixo |
+| 1.10 | Modo de permissão do próprio assistente (ele lê o próprio arquivo de configuração; no Claude Code, `.claude/settings.json` do projeto e do usuário) | modo que executa sem confirmar ligado (no Claude Code, `"defaultMode": "bypassPermissions"` ou a pessoa dizer que usa Bypass; ver Portabilidade pros outros) = problema; conector com ação de escrita fora da aprovação manual = problema. Texto abaixo |
 
 Onde se troca uma credencial, pelos serviços mais comuns: Meta (Configurações do negócio >
 Usuários do sistema > gerar token novo), Google (Console > APIs e serviços > Credenciais), GitHub
@@ -221,22 +240,24 @@ Usuários do sistema > gerar token novo), Google (Console > APIs e serviços > C
 
 **Item 1.6, texto:** "Nada impede hoje que uma senha entre no git de novo, como aconteceu com
 `<arquivo>`. Eu consigo instalar agora uma proteção mínima: um verificador pequeno que roda a cada
-commit, inclusive fora do Claude Code, e bloqueia senha, chave ou arquivo de credencial. É um
+commit, inclusive fora do assistente, e bloqueia senha, chave ou arquivo de credencial. É um
 único arquivo na pasta do git, removível a qualquer momento. Recomendo, porque é a proteção que
 mais evita erro sem depender de você lembrar de nada. Diga ok pra eu instalar." Com o ok:
 `verificar.sh --instalar-protecao-commit`. Se já existir hook de outra origem, o script avisa e
 não mexe; explicar e seguir.
 
 **Item 1.10, o próprio agente como risco:** a pessoa que não programa costuma ligar o modo
-"Bypass permissions" porque ele para de pedir confirmação, e é exatamente isso que o torna
+que executa sem confirmar ("Bypass permissions" no Claude Code; ver Portabilidade) porque ele
+para de pedir confirmação, e é exatamente isso que o torna
 perigoso: nesse modo o agente executa qualquer coisa, inclusive apagar arquivo, enviar e-mail ou
 alterar campanha, sem a pessoa ver antes. Texto: "Uma proteção que não está no seu código, mas no
-jeito de usar o Claude Code: o modo de permissão. No modo Bypass eu faço tudo sem te perguntar,
-o que inclui erro meu ou uma instrução escondida em algo que eu leia. No modo Auto (ou no padrão)
-eu peço seu ok antes de qualquer ação sensível. Recomendo Auto, sempre; a diferença no dia a dia
-é um clique a mais, a diferença em segurança é total. Como trocar: no Claude Code, aperte
-Shift+Tab até aparecer o modo desejado no rodapé, ou escolha no seletor de modo da extensão do VS
-Code. E pra cada ferramenta conectada que faz algo no mundo real (e-mail, Drive, anúncios), eu
+jeito de usar o assistente: o modo de permissão. No modo que executa sem confirmar eu faço tudo
+sem te perguntar,
+o que inclui erro meu ou uma instrução escondida em algo que eu leia. No modo que pede confirmação
+eu peço seu ok antes de qualquer ação sensível. Recomendo esse modo, sempre; a diferença no dia
+a dia é um clique a mais, a diferença em segurança é total. Como trocar: no Claude Code, aperte
+Shift+Tab até aparecer o modo desejado no rodapé (Auto ou padrão), ou escolha no seletor de modo
+da extensão do VS Code; em outra ferramenta, na configuração de aprovação dela. E pra cada ferramenta conectada que faz algo no mundo real (e-mail, Drive, anúncios), eu
 consigo colocar ela na lista de aprovação manual do projeto, que obriga a confirmação mesmo no
 Auto. Diga ok pra eu fazer isso agora."
 
@@ -307,14 +328,14 @@ sempre que `repeticao_30_dias` na configuração ainda for "não":
 
    "Segurança envelhece: dependência nova, arquivo novo, alguém que sai. Recomendo que esta
    verificação se repita sozinha a cada 30 dias. O jeito seguro de fazer isso é um lembrete que
-   roda quando você abre o Claude Code neste projeto: se passaram 30 dias da última verificação,
+   roda quando você abre o assistente neste projeto: se passaram 30 dias da última verificação,
    eu aviso e proponho rodar de novo, e você diz ok. Nada roda sem você presente, de propósito:
    automação que age sem ninguém olhando é o tipo de acesso que, num erro meu, ninguém pega a
-   tempo. Pra isso eu escrevo uma linha no arquivo de instruções do projeto (`CLAUDE.md`, criando
-   ele se não existir) e passo a gravar a data de cada verificação. Diga ok pra eu configurar."
+   tempo. Pra isso eu escrevo uma linha no arquivo de instruções do projeto (`CLAUDE.md` no Claude Code,
+   `AGENTS.md` nas outras ferramentas; criando se não existir) e passo a gravar a data de cada verificação. Diga ok pra eu configurar."
 
-   Com o ok: acrescentar ao `CLAUDE.md` da raiz do projeto a linha "No início de toda sessão,
-   ler `.claude/seguranca-verificar.md`; se `ultima_verificacao` tiver mais de 30 dias, avisar e
+   Com o ok: acrescentar ao arquivo de instruÃ§Ãµes da raiz do projeto (ver Portabilidade) a linha "No início de toda sessão,
+   ler `.seguranca-verificar/config.md`; se `ultima_verificacao` tiver mais de 30 dias, avisar e
    propor rodar /seguranca-verificar." e gravar `repeticao_30_dias: sim`. Em toda execução, gravar
    `ultima_verificacao` com a data do dia. Se a pessoa perguntar por automação sem ela presente
    (agendamento na nuvem, rotina), explicar o trade-off da regra 9 e recomendar contra, pra este
@@ -327,8 +348,8 @@ pra quem nunca fez isso; depois gravar `pedido_de_estrela_feito: sim` e nunca re
    "Se isto te ajudou, uma estrela no repositório ajuda outras pessoas a encontrarem a skill. É
    o jeito que o GitHub tem de mostrar que algo é útil, não custa nada e não te compromete com
    nada. Como dar: abre https://github.com/tiagomouraferraz/modelosdeskills no navegador; se não
-   estiver logado, entra na sua conta do GitHub (a mesma que usa pro Claude Code, ou crie uma
-   gratuita em github.com/signup); no alto da página, à direita, tem um botão com uma estrela e
+   estiver logado, entra na sua conta do GitHub (ou crie uma gratuita em
+   github.com/signup); no alto da página, à direita, tem um botão com uma estrela e
    a palavra 'Star'; clica nele uma vez. Ele muda pra 'Starred' e pronto. Compartilhe a skill com
    um colega e diga como ela ajudou o seu projeto. Ajude outras pessoas a deixarem os seus
    projetos seguros."

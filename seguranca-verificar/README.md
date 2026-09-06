@@ -1,13 +1,13 @@
 # seguranca-verificar
 
-Skill de verificação de segurança pra projeto de Claude Code de quem não programa.
+Skill de verificação de segurança pra projeto feito com assistente de IA por quem não programa. Criada e testada no Claude Code; escrita pra funcionar em qualquer assistente que leia instrução e rode shell.
 
 ## Como instalar
 
 1. Baixe o zip na aba Releases do repositório.
 2. Descompacte dentro de `~/.claude/skills/` (Windows: `C:\Users\SEU-USUARIO\.claude\skills\`).
    A pasta `seguranca-verificar` já vem com o nome certo. Se a pasta `skills` não existir, crie com esse nome. No Windows, ao usar "Extrair tudo", apague o final do caminho de destino (o nome do zip, que o Windows acrescenta sozinho) pra não ficar `seguranca-verificar` dentro de outra `seguranca-verificar`. O resultado certo é `skills` > `seguranca-verificar` > `SKILL.md`.
-3. Abra o Claude Code na pasta do seu projeto e chame `/seguranca-verificar`. Na primeira vez ela
+3. Abra o assistente na pasta do seu projeto e chame `/seguranca-verificar` (no Claude Code) ou peÃ§a "use a skill seguranca-verificar". Em outra ferramenta: Codex lÃª a mesma pasta em `.agents/skills/` do projeto; ferramenta sem suporte a skill usa o conteÃºdo do `SKILL.md` como regra do projeto, com `verificar.sh` na mesma pasta. Na primeira vez ela
    se apresenta, confirma a pasta, pede uma autorização pra olhar o projeto, descobre sozinha o que
    der (onde o app está publicado, onde as senhas moram, qual arquivo controla o login, quais contas
    sustentam o projeto) e só pergunta o que não dá pra ver por ali, explicando por que pergunta e
@@ -39,7 +39,7 @@ alcance do agente. Nunca "está tudo OK". Comando que falha vira "erro", não "c
 ## O que ela não faz
 
 - Não altera nenhum arquivo do seu projeto sem sua confirmação na tela. As únicas alterações que
-  ela propõe: os dois arquivos dela dentro de `.claude/`, linhas no `.gitignore`, tirar um arquivo
+  ela propõe: os dois arquivos dela dentro de `.seguranca-verificar/` na raiz do projeto, linhas no `.gitignore`, tirar um arquivo
   de dado do versionamento (ele continua na sua pasta) e uma proteção mínima de commit (um arquivo
   na pasta do git, removível a qualquer momento).
 - Não mostra o valor de senha ou chave, nem copia pra lugar nenhum.
@@ -54,7 +54,7 @@ alcance do agente. Nunca "está tudo OK". Comando que falha vira "erro", não "c
 
 ## Arquivos
 
-- `SKILL.md`: a instrução que o Claude Code segue.
+- `SKILL.md`: a instrução que o assistente segue (formato aberto Agent Skills, com uma tabela de portabilidade pra outras ferramentas).
 - `bases.md`: a fonte de cada checagem (OWASP, NIST, CIS, GitHub, LGPD).
 - `verificar.sh`: o script de leitura. Roda no Git Bash (que o Claude Code usa no Windows) e em
   qualquer shell de Mac ou Linux. Pode ser lido inteiro antes de usar; não tem nada escondido.
