@@ -5,7 +5,10 @@ Skills de sistema pra Claude Code criadas por um Gestor de Tráfego Pago desde 2
 ## Como instalar
 
 1. Baixe o zip da skill na aba **Releases**.
-2. Descompacte dentro da pasta de skills do seu Claude Code. O zip já vem com a pasta no nome certo.
+2. Descompacte dentro da pasta de skills do seu Claude Code. O zip já vem com a pasta no nome certo. **No Windows, ao usar "Extrair tudo", apague o final do caminho de destino** (o nome do zip que o Windows acrescenta) pra extrair direto em `skills`; senão a pasta fica duplicada (`skills
+ome-da-skill
+ome-da-skill`). O resultado certo é `skills
+ome-da-skillSKILL.md`.
    - Windows: `C:\Users\SEU-USUARIO\.claude\skills\`
    - Mac ou Linux: `~/.claude/skills/`
    - A pasta `.claude` é oculta. Se não aparecer, digite o caminho direto na barra de endereço do explorador de arquivos. Se a pasta `skills` não existir dentro dela, crie com esse nome.
