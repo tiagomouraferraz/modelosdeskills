@@ -75,6 +75,19 @@ if [ "$MODO" = inspecionar ]; then
     cand=$(grep -rilE --exclude-dir=.git --exclude-dir=node_modules 'st\.login|st\.user|login|auth|session|admin|permiss' . 2>/dev/null | head -5 | tr '\n' ' ')
   fi
   out "candidatos_a_arquivo_de_acesso" "INFO" "${cand:-nenhum}"
+  # serviços que o código usa (pra deduzir as contas que sustentam o projeto)
+  serv=""
+  if [ "$REPO" = 1 ]; then busca() { git grep -qiE "$1" 2>/dev/null; }; else busca() { grep -rqiE --exclude-dir=.git --exclude-dir=node_modules "$1" . 2>/dev/null; }; fi
+  busca 'import streamlit|st\.secrets' && serv="$serv Streamlit-Cloud"
+  busca 'gspread|googleapis|google\.oauth2|sheets\.googleapis|drive\.googleapis' && serv="$serv Google(planilhas/Drive/API)"
+  busca 'facebook_business|graph\.facebook\.com|facebook\.com/v[0-9]' && serv="$serv Meta(Business-Manager)"
+  busca 'googleads|google-ads|GoogleAdsClient' && serv="$serv Google-Ads"
+  busca 'supabase' && serv="$serv Supabase"
+  busca 'openai|anthropic' && serv="$serv API-de-IA(OpenAI/Anthropic)"
+  [ -f vercel.json ] && serv="$serv Vercel"
+  [ -f netlify.toml ] && serv="$serv Netlify"
+  git remote get-url origin 2>/dev/null | grep -q github.com && serv="$serv GitHub"
+  out "servicos_detectados_no_codigo" "INFO" "${serv:-nenhum reconhecido}"
   exit 0
 fi
 

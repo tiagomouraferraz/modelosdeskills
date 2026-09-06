@@ -8,8 +8,10 @@ Skill de verificação de segurança pra projeto de Claude Code de quem não pro
 2. Descompacte dentro de `~/.claude/skills/` (Windows: `C:\Users\SEU-USUARIO\.claude\skills\`).
    A pasta `seguranca-verificar` já vem com o nome certo. Se a pasta `skills` não existir, crie com esse nome. No Windows, ao usar "Extrair tudo", apague o final do caminho de destino (o nome do zip, que o Windows acrescenta sozinho) pra não ficar `seguranca-verificar` dentro de outra `seguranca-verificar`. O resultado certo é `skills` > `seguranca-verificar` > `SKILL.md`.
 3. Abra o Claude Code na pasta do seu projeto e chame `/seguranca-verificar`. Na primeira vez ela
-   confirma a pasta, faz cinco perguntas em linguagem simples, e você pode autorizar que ela olhe a
-   pasta e responda sozinha, só pra você confirmar.
+   se apresenta, confirma a pasta, pede uma autorização pra olhar o projeto, descobre sozinha o que
+   der (onde o app está publicado, onde as senhas moram, qual arquivo controla o login, quais contas
+   sustentam o projeto) e só pergunta o que não dá pra ver por ali, explicando por que pergunta e
+   como você descobre a resposta. "Não sei" é sempre resposta válida.
 
 ## O que ela faz
 

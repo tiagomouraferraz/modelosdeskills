@@ -80,45 +80,59 @@ pasta>, como da outra vez.") e ir direto pro Passo 1.
    errada é o único jeito de esta skill produzir resultado enganoso, por isso a confirmação vem
    antes de tudo.
 
-2. **Explicar o que vem a seguir e oferecer os dois caminhos:**
+2. **Pedir uma única autorização pra olhar a pasta.** Pressupor que a pessoa não sabe nada sobre
+   o próprio projeto e que tudo foi feito confiando na IA. Por isso o assistente descobre sozinho
+   tudo que der, e só pergunta o resto.
 
-   "Ótimo. Pra fazer uma boa varredura eu preciso saber cinco coisas sobre o projeto. Nenhuma
-   delas é senha ou chave: é só onde as coisas ficam. Você escolhe como prefere:"
-   - "(A) Eu olho a pasta do projeto e preencho sozinho. Eu só leio os arquivos, não mudo nada,
-     não mostro nenhuma senha, e no fim você confirma ou corrige cada resposta. É o caminho mais
-     rápido."
-   - "(B) Você responde às cinco perguntas, uma de cada vez, com exemplos pra ajudar."
-   "Qual você prefere, A ou B?"
+   "Ótimo. Antes de qualquer pergunta, deixa eu olhar a pasta do projeto: só leitura, não mudo
+   nada e não mostro nenhuma senha. Com isso eu mesmo descubro a maior parte do que preciso e só
+   te pergunto o que não dá pra ver por aqui. Posso olhar?"
 
-3. **Opção A, depois da autorização explícita:** avisar "Vou olhar a pasta agora. Leva alguns
-   segundos." e rodar `verificar.sh --inspecionar`. Ele imprime
-   se a pasta é repositório git e o endereço remoto (com credencial mascarada), arquivos de
-   credencial presentes, arquivo de dependências, sinais de app publicado e candidatos a arquivo de
-   acesso. Transformar isso em resposta proposta pra P1, P2 e P3; mostrar cada pergunta com a
-   proposta e pedir confirmação ou correção. P4 e P5 são sempre perguntadas.
-4. **Opção B, ou pra completar a A:** perguntar, uma de cada vez, com o texto e os exemplos como
-   estão.
+3. **Depois do sim:** avisar "Olhando agora, leva alguns segundos." e rodar
+   `verificar.sh --inspecionar` **e** `verificar.sh` (a verificação completa, ainda sem arquivo de
+   acesso). Com as duas saídas, deduzir o máximo e **contar o que descobriu em linguagem
+   simples**, antes de perguntar qualquer coisa. Exemplo de resumo:
 
-   - **P1** "Alguma parte deste projeto fica no ar, na internet, pra outra pessoa acessar? Exemplos
-     comuns: um painel de resultados que o cliente abre por link, um site, um formulário de
-     cadastro, um dashboard. Se sim, em qual serviço ele está hospedado? Exemplos: Streamlit Cloud,
-     Vercel, WordPress, Hostinger, Google Sites. Se não tiver nada no ar, responde 'não'."
-   - **P2** "Onde ficam as senhas e chaves que o projeto usa? 'Chave' aqui é qualquer código que dá
-     acesso a alguma coisa: token do Meta Ads, chave de API do Google, senha de banco de dados,
-     senha de e-mail. As respostas mais comuns: (1) num arquivo chamado `.env` dentro da pasta do
-     projeto; (2) no painel de 'Secrets' ou 'Variáveis de ambiente' do serviço onde o app está
-     hospedado; (3) escrita direto dentro do código do app; (4) não sei. As respostas 3 e 4 são
-     válidas e já viram o primeiro item a resolver."
-   - **P3** "Existe um arquivo do projeto que controla quem pode entrar e o que cada pessoa vê?
-     Exemplo comum: o arquivo principal de um painel de cliente, que faz o login e mostra só os
-     dados daquele cliente. Se souber, me diz o nome (ex: `app.py`). Se não tiver nada assim, ou
-     não souber, responde 'não sei' e eu procuro."
-   - **P4** "Quais contas online sustentam este projeto? Só o nome do serviço, sem login nem senha.
-     Exemplos: GitHub (onde o código fica guardado), Google (Drive, planilhas, e-mail), Microsoft
-     (OneDrive), Meta (Business Manager), o serviço onde o app está hospedado."
-   - **P5** "Existe outra pasta nesta máquina com código deste mesmo projeto? Exemplo comum: a
-     pasta do painel de cliente baixada separada da pasta principal. Se sim, o caminho. Se não,
-     'não'."
+   "Pronto. O que eu descobri: o projeto é um painel feito em Streamlit, que lê planilhas do
+   Google; o código fica guardado no GitHub; o arquivo `app.py` é o que faz o login e decide o
+   que cada pessoa vê; e já encontrei uma chave escrita dentro de `config.py`, na linha 2, que
+   vamos resolver daqui a pouco. Faltam só duas coisas que eu não consigo ver daqui."
+
+   Como deduzir cada dado:
+   - **Publicado e onde:** `sinais_de_app_publicado` e `servicos_detectados_no_codigo` (Streamlit,
+     Vercel, Netlify). Sem sinal: propor "parece que nada está no ar" e confirmar.
+   - **Onde moram as credenciais:** `arquivos_de_credencial_na_pasta` (tem `.env` = arquivo local);
+     item 1.1 com problema = "dentro do código"; nenhum dos dois + serviço de hospedagem detectado
+     = provavelmente no painel do serviço, confirmar.
+   - **Arquivo de acesso:** `candidatos_a_arquivo_de_acesso`. Um candidato só: propor. Vários:
+     mostrar os nomes e explicar como reconhecer ("é o arquivo que faz login e filtra o que cada
+     pessoa vê; num painel, costuma ser o principal, tipo `app.py`"). Nenhum: "parece não ter
+     controle de acesso; se o app é aberto pra qualquer um com o link, isso vira um item de
+     atenção".
+   - **Contas que sustentam o projeto:** `servicos_detectados_no_codigo` mais GitHub se houver
+     remoto. Apresentar a lista deduzida e perguntar só "falta alguma?".
+
+4. **Perguntar só o que sobrou, uma pergunta por vez, sempre com as quatro partes:** por que
+   estou perguntando, quais as respostas mais comuns, como você descobre a sua, e o que eu faço
+   com a resposta. "Não sei" é sempre resposta válida: leva a um caminho guiado de descoberta ou
+   vira item pendente, e a varredura continua. Nunca travar esperando.
+
+   O que costuma sobrar, e o texto de cada uma:
+
+   - **Confirmar o que foi deduzido** (publicado, credenciais, arquivo de acesso, contas): "Eu
+     deduzi X. Bate com o que você lembra? Se não souber, tudo bem: eu sigo com X e marco pra
+     conferir depois."
+   - **Outras pastas** (não dá pra descobrir olhando esta): "Pergunto porque às vezes o código de
+     um painel publicado fica numa pasta separada da pasta principal do projeto, e eu preciso
+     verificar as duas. As respostas comuns: 'não, é só esta' ou 'sim, tem outra pasta com o
+     código do painel'. Como descobrir: se você já clonou ou baixou algum repositório do GitHub
+     pra este projeto, ele está em outra pasta; procure no Explorador por uma pasta com o nome do
+     repositório. Se não souber, eu sigo só com esta pasta e deixo anotado pra você conferir."
+   - **Quem consegue abrir o app publicado** (só se houver app): "Pergunto porque um painel com
+     dado de cliente aberto pra qualquer pessoa com o link é o vazamento mais comum. As respostas
+     comuns: 'só quem eu liberei' ou 'qualquer pessoa com o link'. Como descobrir, no Streamlit
+     Cloud: entra no painel do app, Settings, Sharing; na Vercel: Settings, Deployment
+     Protection. Se você me disser o que está marcado lá, eu te digo se está do jeito certo."
 
 5. Gravar `.claude/seguranca-verificar.md` com este modelo (nunca escrever senha ou chave nele).
    Quando o arquivo de acesso estiver em outra pasta, gravar a pasta junto:
@@ -133,9 +147,10 @@ pasta>, como da outra vez.") e ir direto pro Passo 1.
    ultima_revisao_de_contas: nunca
    ```
 
-6. Avisar "Configuração guardada. Agora vou fazer a primeira varredura de verdade; te mostro o
-   resultado item por item, com o que está bem e o que precisa de atenção." e rodar o Passo 1
-   completo. Se houver arquivo de acesso e o item 1.1 estiver limpo, perguntar "O
+6. Avisar "Configuração guardada. Agora te mostro o resultado da varredura item por item, com o
+   que está bem e o que precisa de atenção, e vamos resolver um de cada vez." e seguir pro Passo 3
+   com o resultado já obtido no item 3 (rodar de novo com `--acesso` se um arquivo de acesso foi
+   confirmado). Se houver arquivo de acesso e o item 1.1 estiver limpo, perguntar "O
    arquivo <nome> está hoje do jeito que deveria, com o login e o acesso funcionando como você
    quer?" e, com o sim, criar a referência (Passo 1, `--baseline-criar`). Avisar: "Guardei só uma
    assinatura das linhas de segurança de <arquivo>, sem o texto. Da próxima vez eu comparo e aviso
@@ -187,9 +202,10 @@ Regras de leitura da saída:
 
 ## Passo 2: camada de contas (só a pessoa confirma)
 
-Nenhum destes itens é verificável daqui. Perguntar com o texto abaixo, com a dica de onde
-conferir, e registrar a resposta como estado; sem resposta, o estado é "fora do alcance do
-agente, pendente".
+Nenhum destes itens é verificável daqui. Perguntar uma de cada vez, com o texto abaixo e as
+quatro partes (por que pergunto, respostas comuns, como conferir, o que faço com a resposta), e
+registrar a resposta como estado. "Não sei" vira "fora do alcance do agente, pendente", com a
+instrução de como conferir repetida no relatório, e a conversa segue pra próxima pergunta.
 
 - "O repositório no GitHub está privado? Conferir: ao lado do nome do repositório aparece
   'Public' ou 'Private'. Se tem dado de cliente e está Public, isso é o primeiro item a resolver."
@@ -241,7 +257,8 @@ risco real e verificável, não prometer certeza.
 ## Checklist copiável
 
 - [ ] Pasta confirmada com a pessoa antes de qualquer comando
-- [ ] Configuração existe (`.claude/seguranca-verificar.md`); se não, Passo 0 com autorização
+- [ ] Configuração existe (`.claude/seguranca-verificar.md`); se não, Passo 0: olhar primeiro
+      (uma autorização), contar o que descobriu, perguntar só o resto com as quatro partes
 - [ ] `verificar.sh` rodado na pasta principal e em cada `outras_pastas`, com `--acesso` quando houver
 - [ ] `ERRO` e `NAO_SE_APLICA` reportados como tal, nunca como correto
 - [ ] Problema em 1.1 ou 1.2: pessoa avisada com arquivo e linha; ordem trocar → tirar → histórico
