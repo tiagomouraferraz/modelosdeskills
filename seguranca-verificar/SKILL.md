@@ -41,7 +41,11 @@ certo, diga ok pra eu seguir; se não, me corrige." O "ok" pedido nunca é solto
    moram em arquivo. Sigo assim. Se estiver publicado em algum lugar, me diz onde. Senão, diga ok pra eu seguir."
 3. **Perguntar só o que não dá pra descobrir**, uma pergunta por vez, sempre com: por que
    pergunto, "respostas mais comuns pra esta situação" (com esse rótulo, escrito), como você descobre a sua, o que faço com a resposta, e o que
-   assumo se você não souber. "Não sei" nunca trava: vira a suposição mais segura, anotada.
+   assumo se você não souber. "Não sei" nunca trava, mas **nunca vira resposta inventada**: o que
+   não foi verificado é gravado como "pendente: conferir em <onde>", nunca como valor. A ação
+   padrão nesse caso é sempre "diga ok pra eu anotar como pendente e seguir", não "diga ok pra eu
+   anotar X". Dedução do script é gravada com a evidência que a sustenta ("sem endereço de
+   repositório remoto nesta pasta"), não como conclusão além dela ("não está no GitHub").
 4. **Nunca pedir julgamento técnico cru.** Antes de qualquer "está certo?", o assistente lê,
    descreve em linguagem simples, diz se bate com a boa prática e cita qual (`bases.md`), sugere,
    e pede só o ok.
@@ -272,8 +276,8 @@ achado: uma linha ("nenhum achado nos N itens de código; M pendências de conta
 ## Passo 3: contas (só a pessoa confirma)
 
 Uma pergunta por vez, no formato da regra 3, com o que assumo se não souber ("anoto como pendente
-com o caminho pra conferir"). Registrar a resposta como estado; "não sei" = fora do alcance,
-pendente. Ao terminar, gravar a data em `ultima_revisao_de_contas`.
+com o caminho pra conferir"). Registrar a resposta como estado; "não sei", ou qualquer coisa que o assistente não conseguiu
+verificar, é gravado como "pendente: conferir em <onde>", nunca como resposta presumida. Ao terminar, gravar a data em `ultima_revisao_de_contas`.
 
 - "O repositório no GitHub está privado? Conferir: ao lado do nome aparece Public ou Private. Com
   dado de cliente, Private é o certo."
