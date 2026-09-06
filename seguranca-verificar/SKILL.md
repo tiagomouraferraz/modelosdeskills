@@ -40,7 +40,7 @@ certo, diga ok pra eu seguir; se não, me corrige." O "ok" pedido nunca é solto
    decisão com porta aberta: "Pelo que vi, o painel ainda não está no ar e as credenciais não
    moram em arquivo. Sigo assim. Se estiver publicado em algum lugar, me diz onde. Senão, diga ok pra eu seguir."
 3. **Perguntar só o que não dá pra descobrir**, uma pergunta por vez, sempre com: por que
-   pergunto, respostas mais comuns, como você descobre a sua, o que faço com a resposta, e o que
+   pergunto, "respostas mais comuns pra esta situação" (com esse rótulo, escrito), como você descobre a sua, o que faço com a resposta, e o que
    assumo se você não souber. "Não sei" nunca trava: vira a suposição mais segura, anotada.
 4. **Nunca pedir julgamento técnico cru.** Antes de qualquer "está certo?", o assistente lê,
    descreve em linguagem simples, diz se bate com a boa prática e cita qual (`bases.md`), sugere,
@@ -149,11 +149,11 @@ segurança do projeto `<pasta>`, como da outra vez." e ir pro Passo 1. Se não e
 
 4. **Perguntar só o que sobrou**, no formato da regra 3. Normalmente sobram duas:
    - **Outras pastas:** "Às vezes o código de um painel publicado fica numa pasta separada, e eu
-     preciso verificar as duas. Comum: 'é só esta' ou 'tem outra com o código do painel'. Como
+     preciso verificar as duas. Respostas mais comuns pra esta situação: 'é só esta' ou 'tem outra com o código do painel'. Como
      descobrir: se você baixou algum repositório do GitHub pra este projeto, ele está em outra
      pasta, com o nome do repositório. Se não souber, sigo só com esta e anoto. Diga ok pra eu seguir, ou me passa o caminho da outra pasta."
    - **Quem abre o app publicado** (só se houver app): "Painel com dado de cliente aberto pra
-     qualquer pessoa com o link é o vazamento mais comum. Comum: 'só quem eu liberei' ou 'qualquer
+     qualquer pessoa com o link é o vazamento mais comum. Respostas mais comuns pra esta situação: 'só quem eu liberei' ou 'qualquer
      pessoa com o link'. Como conferir: Streamlit Cloud, Settings > Sharing; Vercel, Settings >
      Deployment Protection. Se não souber agora, anoto como pendência com esse caminho. Diga ok pra eu seguir, ou me diz o que está marcado lá."
 
