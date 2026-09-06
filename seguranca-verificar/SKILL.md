@@ -59,6 +59,25 @@ certo, diga ok pra eu seguir; se não, me corrige." O "ok" pedido nunca é solto
    digitar. Resolvido um item, dizer "feito" e passar pro próximo sem esperar pedido.
 8. **Esta skill se resolve sozinha.** Nenhum item depende de outra skill instalada. Outra skill do
    pacote, se existir na máquina, é oferecida uma vez como versão mais completa, opcional.
+9. **"Fora do alcance" vem com o caminho pra deixar de ser.** Quando o assistente não consegue
+   verificar ou executar algo, mas existe uma extensão, conector ou ferramenta oficial que daria a
+   ele esse alcance, dizer isso na hora e deixar a pessoa decidir. Formato: o que hoje não dá pra
+   fazer; o que a ferramenta permitiria; o que ela dá de acesso (só leitura ou também escrita, e a
+   quê); o passo a passo de instalação pra quem nunca fez, sempre pela fonte oficial; e a
+   recomendação, com a ressalva de que dar mais acesso ao agente é decisão dela. Só ferramenta
+   oficial da plataforma ou do próprio Claude Code; nunca de terceiro desconhecido. Casos comuns
+   desta skill:
+   - **Repositório privado, Dependabot, secret scanning (Passo 2):** hoje é pergunta. Com a
+     ferramenta de linha de comando oficial do GitHub (`gh`, em cli.github.com, instalador pra
+     Windows e Mac; depois `gh auth login` no terminal, seguindo as telas) o assistente consulta
+     isso sozinho. Acesso: à conta GitHub da pessoa, leitura e escrita nos repositórios dela.
+   - **Planilha compartilhada com "qualquer pessoa com o link" (Passo 2):** hoje é pergunta. Com o
+     conector do Google Drive ligado na conta claude.ai (claude.ai > Configurações > Conectores >
+     Google Drive > Conectar, autorizando com a conta Google), o assistente lê as permissões do
+     arquivo. Acesso: aos arquivos do Drive da pessoa.
+   - **Quem abre o app publicado (Passo 2):** hoje é pergunta. Algumas hospedagens têm ferramenta
+     oficial de linha de comando (ex: Vercel CLI, `npm i -g vercel` e `vercel login`) que mostra a
+     configuração de proteção; o Streamlit Cloud não tem, e continua sendo conferido no painel.
 
 ## Segurança do próprio processo
 
