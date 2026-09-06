@@ -128,26 +128,37 @@ pasta>, como da outra vez.") e ir direto pro Passo 1.
    inventado: cada checagem segue práticas de segurança consolidadas e usadas no mundo inteiro
    (OWASP, NIST, CIS Controls, orientações oficiais do GitHub e o princípio de minimização de
    dados da LGPD). Se quiser, te mostro qual base sustenta cada item. Não vou alterar nada do
-   seu projeto e não vou mostrar nenhuma senha na tela. Primeiro preciso confirmar uma coisa: a
-   pasta aberta agora é `<caminho da pasta atual>`. É esse o projeto que você quer verificar?"
+   seu projeto e não vou mostrar nenhuma senha na tela."
 
    Se a pessoa pedir as bases, mostrar a seção "Em que cada checagem se baseia" deste arquivo em
    linguagem simples, item por item, sem inflar: são práticas reconhecidas implementadas de forma
    simplificada, não uma certificação nem cobertura completa desses padrões.
 
-   Se a pasta parecer errada (vazia, ou contendo só os arquivos desta skill), dizer isso de forma
-   simples: "Essa pasta parece ser a da própria skill, não a do seu projeto. Abre o Claude Code na
-   pasta do projeto que você quer proteger e me chama de novo com /seguranca-verificar." Pasta
-   errada é o único jeito de esta skill produzir resultado enganoso, por isso a confirmação vem
-   antes de tudo.
+   Em seguida, na mesma mensagem, **a pasta é confirmada por exceção, não por pergunta**. Olhar
+   a listagem da pasta atual (só nomes de arquivo) e decidir:
 
-2. **Pedir uma única autorização pra olhar a pasta.** Pressupor que a pessoa não sabe nada sobre
-   o próprio projeto e que tudo foi feito confiando na IA. Por isso o assistente descobre sozinho
-   tudo que der, e só pergunta o resto.
+   - **Parece um projeto real** (tem código, dado ou configuração além dos arquivos desta skill):
+     assumir e seguir, deixando a porta aberta. "A pasta aberta é `<caminho>`. Pelo que tem nela
+     (<dois ou três nomes, ex: `app.py`, `leads-agosto.csv`, `.streamlit`>), me parece um projeto
+     de painel, e é nele que vou focar a varredura. Se não for esse o projeto, me avisa."
+   - **Pasta vazia, só com os arquivos desta skill, ou ambígua:** aí sim parar e perguntar. "Essa
+     pasta parece ser a da própria skill (ou está vazia), não a do seu projeto. Abre o Claude
+     Code na pasta do projeto que você quer proteger e me chama de novo com /seguranca-verificar."
+     Pasta errada é o único jeito de esta skill produzir resultado enganoso, por isso é o único
+     caso em que a abertura trava.
 
-   "Ótimo. Antes de qualquer pergunta, deixa eu olhar a pasta do projeto: só leitura, não mudo
-   nada e não mostro nenhuma senha. Com isso eu mesmo descubro a maior parte do que preciso e só
-   te pergunto o que não dá pra ver por aqui. Posso olhar?"
+2. **Ainda na mesma mensagem, um único pedido de ok: olhar a pasta.** Pressupor que a pessoa não
+   sabe nada sobre o próprio projeto e que tudo foi feito confiando na IA. Por isso o assistente
+   descobre sozinho tudo que der, e só pergunta o resto.
+
+   "Antes de qualquer pergunta, deixa eu olhar a pasta: só leitura, não mudo nada e não mostro
+   nenhuma senha. Com isso eu mesmo descubro a maior parte do que preciso e só te pergunto o que
+   não dá pra ver por aqui. Recomendo começar por aí. Posso olhar?"
+
+   Regra geral que nasce daqui: **confirmar por exceção sempre que houver evidência**. Quando o
+   assistente consegue deduzir, ele diz o que deduziu e segue, com "me avisa se não for isso".
+   Pergunta que trava fica reservada pra quando não há evidência nenhuma ou pra ação que altera
+   algo.
 
 3. **Depois do sim:** avisar "Olhando agora, leva alguns segundos." e rodar
    `verificar.sh --inspecionar` **e** `verificar.sh` (a verificação completa, ainda sem arquivo de
