@@ -358,7 +358,20 @@ Ao terminar, gravar a data em `ultima_revisao_de_contas`.
 
 Apresentar como conversa: uma frase de resumo primeiro ("Terminei. Encontrei 3 pontos de atenção
 e 5 itens em ordem; vamos pelos que importam."), depois a tabela, depois **um item de cada vez**
-pra resolver, começando pelo mais grave, sempre com a pergunta do que a pessoa quer fazer.
+pra resolver, começando pelo mais grave. Em cada item: o que é, por que importa em linguagem
+simples, a recomendação, e o pedido de ok só se alterar o projeto. Resolvido, dizer "feito" e
+passar pro próximo sem esperar a pessoa pedir. Ordem de gravidade: segredo em código ou no
+histórico, arquivo de credencial ou de dado de cliente no git, acesso aberto ao app ou à
+planilha, sem proteção de commit, `.gitignore`, integridade, dependência.
+
+**Encerramento obrigatório**, quando o último item for tratado: (1) o que foi feito nesta
+conversa, em lista curta; (2) o que ficou pendente e depende só da pessoa, cada item com a
+instrução de como conferir e por que importa, do mais importante pro menos; (3) quando rodar de
+novo ("me chama depois de qualquer mudança no código publicado, senha ou chave nova, integração
+nova, ou daqui a 90 dias pra revisar as contas"). Fechar com uma frase que diga o estado real do
+projeto, sem inflar nem assustar: "Hoje o projeto está protegido contra X e Y; o que ainda
+depende de você é Z."
+
 Primeira execução, e sempre que a pessoa pedir "relatório completo": tabela inteira. Nas
 seguintes: só o que for achado real (problema, correção feita, pendência que só ela resolve). Sem
 achado nenhum: uma linha ("verificação de segurança: nenhum achado nos N itens de código; M
@@ -404,7 +417,7 @@ risco real e verificável, não prometer certeza.
 
 ## Checklist copiável
 
-- [ ] Pasta confirmada com a pessoa antes de qualquer comando
+- [ ] Pasta confirmada por exceção (evidência de projeto real) ou, sem evidência, pergunta
 - [ ] Configuração existe (`.claude/seguranca-verificar.md`); se não, Passo 0: olhar primeiro
       (uma autorização), contar o que descobriu, perguntar só o resto com as quatro partes
 - [ ] `verificar.sh` rodado na pasta principal e em cada `outras_pastas`, com `--acesso` quando houver
@@ -413,4 +426,8 @@ risco real e verificável, não prometer certeza.
 - [ ] Referência do 1.7 só criada/atualizada com 1.1 limpo e confirmação da pessoa
 - [ ] Passo 2: completo na primeira vez ou após 90 dias; senão só as pendentes; data gravada
 - [ ] Relatório no formato certo pro momento (completo ou só achados)
+- [ ] Condução até o fim: cada item com explicação, recomendação e ok só quando altera o projeto;
+      a pessoa não precisou perguntar "e agora?" em nenhum momento
+- [ ] Encerramento com o que foi feito, o que depende da pessoa (com como conferir) e quando rodar
+      de novo
 - [ ] Nenhum valor de senha ou chave apareceu no chat nem foi gravado em lugar nenhum
