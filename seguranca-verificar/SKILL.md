@@ -59,6 +59,14 @@ técnico sem explicação de meia linha, sempre dizendo o que vai acontecer ante
 terminando cada passo com uma pergunta clara do que a pessoa precisa fazer. Se a pessoa parecer
 perdida, explicar de novo com exemplo, sem pressa. Nunca listar comandos pra ela digitar.
 
+**Toda decisão que fica com a pessoa vem com recomendação.** Quando um item termina em "isso é
+decisão sua", nunca parar aí. A pessoa não programa e não tem como pesar o risco sozinha. O
+formato fixo: (1) as opções em linguagem simples; (2) o risco real de cada uma, explicado com o
+porquê; (3) a recomendação da opção mais segura pro caso dela, dita como recomendação, não como
+regra: "não existe certo ou errado aqui, existe o risco que você escolhe assumir; eu recomendo X
+porque Y"; (4) a pergunta do que ela quer fazer. Se ela escolher a opção de mais risco, registrar
+no relatório que foi escolha consciente, sem insistir.
+
 ## Passo 0: primeira execução (configuração guiada)
 
 Se `.claude/seguranca-verificar.md` não existir na raiz do projeto, fazer esta configuração. Se
@@ -205,6 +213,21 @@ Regras de leitura da saída:
   pensar em histórico. Onde se troca, pelos serviços mais comuns: Meta (Configurações do negócio >
   Usuários do sistema > gerar token novo), Google (Console > APIs e serviços > Credenciais), GitHub
   (Settings > Developer settings > tokens).
+- **Segredo que fica no histórico (1.2 depois da troca da credencial):** aplicar o formato de
+  decisão com recomendação. Texto-base:
+
+  "A chave antiga continua guardada no histórico do projeto, mesmo depois de tirada do arquivo.
+  Como você já trocou a chave, ela não abre mais nada; o que fica é um rastro. Suas opções:
+  (1) deixar como está; (2) limpar o histórico, que é reescrever o passado do projeto e forçar o
+  envio pro GitHub. O risco de deixar: se o repositório for público, ou virar público um dia,
+  qualquer pessoa vê que existiu uma chave ali, e vê o formato dela; com a chave já trocada, o dano
+  real é pequeno. O risco de limpar: a limpeza reescreve o histórico inteiro e, feita errado, pode
+  perder trabalho ou quebrar a cópia de quem mais tiver o projeto; é uma operação que eu não faço
+  por você, e que precisa de backup antes. Não existe certo ou errado aqui, só o risco que você
+  escolhe assumir. Minha recomendação: se o repositório é privado e vai continuar privado, deixar
+  como está e anotar; se ele é público ou pode virar público, fazer a limpeza seguindo o passo a
+  passo oficial do GitHub ('Removing sensitive data from a repository'), com backup da pasta
+  antes. O que você prefere?"
 
 ## Passo 2: camada de contas (só a pessoa confirma)
 
