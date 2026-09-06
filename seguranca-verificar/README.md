@@ -52,6 +52,18 @@ alcance do agente. Nunca "está tudo OK". Comando que falha vira "erro", não "c
   fora do projeto. Detector de segredo funciona por formato conhecido: senha simples em variável
   de nome inocente passa.
 
+## Relação com a `/security-review` nativa do Claude Code
+
+O Claude Code tem um comando próprio, `/security-review`, que faz uma revisão de segurança do
+**código alterado na branch atual**: procura vulnerabilidade no que está sendo programado
+(validação de entrada, injeção, uso inseguro de biblioteca), fala em termos de desenvolvedor e
+termina quando entrega o parecer. Esta skill faz outra coisa: cuida da **higiene de segurança do
+projeto** pra quem não programa (segredo em arquivo e no histórico inteiro, `.gitignore`, proteção
+de commit, dado de cliente no git, login adulterado, modo de permissão do assistente, contas e
+compartilhamentos), guarda estado entre execuções e conduz a pessoa do início ao fim. As duas se
+complementam: se o seu projeto tem código de verdade e você usa o Claude Code, ao final desta
+verificação o assistente sugere rodar a nativa também.
+
 ## Arquivos
 
 - `SKILL.md`: a instrução que o assistente segue (formato aberto Agent Skills, com uma tabela de portabilidade pra outras ferramentas).
