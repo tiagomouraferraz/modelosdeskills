@@ -7,7 +7,7 @@ Skill de verificação de segurança pra projeto feito com assistente de IA por 
 1. Baixe o zip na aba Releases do repositório.
 2. Descompacte dentro de `~/.claude/skills/` (Windows: `C:\Users\SEU-USUARIO\.claude\skills\`).
    A pasta `seguranca-verificar` já vem com o nome certo. Se a pasta `skills` não existir, crie com esse nome. No Windows, ao usar "Extrair tudo", apague o final do caminho de destino (o nome do zip, que o Windows acrescenta sozinho) pra não ficar `seguranca-verificar` dentro de outra `seguranca-verificar`. O resultado certo é `skills` > `seguranca-verificar` > `SKILL.md`.
-3. Abra o assistente na pasta do seu projeto e chame `/seguranca-verificar` (no Claude Code) ou peÃ§a "use a skill seguranca-verificar". Em outra ferramenta: Codex lÃª a mesma pasta em `.agents/skills/` do projeto; ferramenta sem suporte a skill usa o conteÃºdo do `SKILL.md` como regra do projeto, com `verificar.sh` na mesma pasta. Na primeira vez ela
+3. Abra o assistente na pasta do seu projeto e chame `/seguranca-verificar` (no Claude Code) ou peça "use a skill seguranca-verificar". Em outra ferramenta: Codex lê a mesma pasta em `.agents/skills/` do projeto; ferramenta sem suporte a skill usa o conteúdo do `SKILL.md` como regra do projeto, com `verificar.sh` na mesma pasta. Na primeira vez ela
    se apresenta, confirma a pasta, pede uma autorização pra olhar o projeto, descobre sozinha o que
    der (onde o app está publicado, onde as senhas moram, qual arquivo controla o login, quais contas
    sustentam o projeto) e só pergunta o que não dá pra ver por ali, explicando por que pergunta e
@@ -78,6 +78,7 @@ publicado e credenciais em `.env` e no painel de Secrets da hospedagem. Testada 
 Claude Code pelo VS Code, num projeto de teste com erros colocados de propósito (segredo em código
 e no histórico, `.gitignore` vazio, dependência sem versão, arquivo de acesso adulterado, pasta sem
 git). Não testada em Mac ou Linux, embora os comandos sejam padrão de shell. Passou por uma rodada
-de crítica independente antes de publicar.
+de crítica independente e por várias rodadas de teste humano (a pessoa rodando a skill como
+usuária, do início ao fim, com cada achado virando correção) antes desta versão.
 
 Adapte à sua realidade. Uso por sua conta e risco (ver README principal do repositório).
