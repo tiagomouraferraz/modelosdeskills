@@ -19,7 +19,7 @@ Nenhuma checagem foi inventada. Cada item corresponde a uma prática documentada
 pela comunidade de segurança e de desenvolvimento: OWASP (Top 10 e Secrets Management Cheat Sheet),
 NIST (SP 800-53 e SP 800-63B), CIS Controls v8, orientações oficiais do GitHub, Twelve-Factor App,
 e o princípio de minimização de dados da LGPD e do GDPR. A tabela com a fonte de cada checagem está
-no `SKILL.md`, seção "Em que cada checagem se baseia". O script é uma implementação simplificada
+em `bases.md`, na pasta da skill. O script é uma implementação simplificada
 dessas práticas pra quem não programa; não é certificação nem cobertura completa dos padrões.
 
 ## O que ela faz
@@ -55,6 +55,7 @@ alcance do agente. Nunca "está tudo OK". Comando que falha vira "erro", não "c
 ## Arquivos
 
 - `SKILL.md`: a instrução que o Claude Code segue.
+- `bases.md`: a fonte de cada checagem (OWASP, NIST, CIS, GitHub, LGPD).
 - `verificar.sh`: o script de leitura. Roda no Git Bash (que o Claude Code usa no Windows) e em
   qualquer shell de Mac ou Linux. Pode ser lido inteiro antes de usar; não tem nada escondido.
 
