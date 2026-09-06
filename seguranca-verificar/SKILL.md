@@ -69,10 +69,16 @@ pasta>, como da outra vez.") e ir direto pro Passo 1.
 
    "Oi! Sou seu assistente de segurança. Vou te ajudar a proteger este projeto contra os erros
    mais comuns de quem usa IA sem ser programador: senha escrita onde não devia, arquivo de
-   acesso indo parar no lugar errado, e mudança no login que ninguém percebeu. Não vou alterar
-   nada do seu projeto e não vou mostrar nenhuma senha na tela. Primeiro preciso confirmar uma
-   coisa: a pasta aberta agora é `<caminho da pasta atual>`. É esse o projeto que você quer
-   verificar?"
+   acesso indo parar no lugar errado, e mudança no login que ninguém percebeu. Nada aqui foi
+   inventado: cada checagem segue práticas de segurança consolidadas e usadas no mundo inteiro
+   (OWASP, NIST, CIS Controls, orientações oficiais do GitHub e o princípio de minimização de
+   dados da LGPD). Se quiser, te mostro qual base sustenta cada item. Não vou alterar nada do
+   seu projeto e não vou mostrar nenhuma senha na tela. Primeiro preciso confirmar uma coisa: a
+   pasta aberta agora é `<caminho da pasta atual>`. É esse o projeto que você quer verificar?"
+
+   Se a pessoa pedir as bases, mostrar a seção "Em que cada checagem se baseia" deste arquivo em
+   linguagem simples, item por item, sem inflar: são práticas reconhecidas implementadas de forma
+   simplificada, não uma certificação nem cobertura completa desses padrões.
 
    Se a pasta parecer errada (vazia, ou contendo só os arquivos desta skill), dizer isso de forma
    simples: "Essa pasta parece ser a da própria skill, não a do seu projeto. Abre o Claude Code na
@@ -245,6 +251,29 @@ pendências de conta seguem abertas").
 | 1.4 `.gitignore` | Verificado e com problema | `.env` descoberto; corrigido com confirmação: linha `.env` adicionada |
 | 1.7 Integridade | Verificado e correto | 4 linhas iguais à referência; fonte: versão publicada (origin/main) |
 | 2.2 Duas etapas | Fora do alcance do agente | pendente: resposta da pessoa |
+
+## Em que cada checagem se baseia
+
+Fontes reconhecidas pela comunidade de segurança e de desenvolvimento. O script implementa cada
+prática de forma simplificada, pro contexto de quem não programa; não substitui os padrões nem
+certifica conformidade com eles.
+
+| Checagem | Prática e fonte |
+| --- | --- |
+| 1.1, 1.2 Segredo em código ou no histórico | Credencial nunca no código: OWASP Top 10 (A02, falhas criptográficas; A05, configuração insegura), OWASP Secrets Management Cheat Sheet, fraqueza catalogada CWE-798 (credencial embutida no código), Twelve-Factor App, fator III (configuração em variável de ambiente) |
+| 1.2 Trocar a credencial antes de limpar o histórico | Orientação oficial do GitHub, "Removing sensitive data from a repository": o segredo já vazou; revogar e gerar um novo vem antes de qualquer limpeza |
+| 1.3, 1.4 Arquivo de credencial rastreado ou fora do `.gitignore` | Mesmas fontes de 1.1, aplicadas ao controle de versão; prática padrão de ferramentas como gitleaks, git-secrets e o secret scanning do GitHub |
+| 1.5 Dependência com versão fixada | OWASP Top 10 (A06, componentes vulneráveis e desatualizados); orientação de dependências fixadas e lockfile de pip, npm e do framework SLSA de cadeia de suprimento |
+| 1.6 Proteção de commit (hook `pre-commit`) | Detecção de segredo antes do commit: OWASP Secrets Management Cheat Sheet (detecção), push protection do GitHub, ferramentas gitleaks, git-secrets e detect-secrets |
+| 1.7 Integridade do arquivo de acesso contra referência | Monitoramento de integridade de arquivo: NIST SP 800-53, controle SI-7 (integridade de software e informação); PCI DSS, requisito 11.5 |
+| 1.8 Arquivo de dado de cliente rastreado | Minimização de dados: LGPD, art. 6º, princípio da necessidade; GDPR, art. 5º(1)(c); CIS Controls v8, controle 3 (proteção de dados) |
+| 1.9 Variável pública de frontend com nome sensível | Tudo que vai pro navegador é público: OWASP (exposição de dado no cliente); documentação da Vercel e do Next.js sobre variáveis `NEXT_PUBLIC_` |
+| 2 Verificação em duas etapas | NIST SP 800-63B (autenticação; preferir método resistente a phishing) e orientação da CISA pra pequenas empresas |
+| 2 Repositório privado, app com acesso restrito, planilha não pública | Menor privilégio e controle de acesso: NIST SP 800-53, controles AC-3 e AC-6; CIS Controls v8, controles 3 e 6 |
+| 2 Acesso de quem saiu removido | Gestão de contas: NIST SP 800-53, controle AC-2; CIS Controls v8, controle 5 |
+| 2 Rotação de chave a cada ~90 dias | Recomendação da documentação do Google Cloud pra chave de conta de serviço; prática geral de rotação de credencial (OWASP Secrets Management) |
+| 2 Disco criptografado | CIS Controls v8, controle 3.6 (criptografia em dispositivo de usuário final); orientação da CISA |
+| Três estados, nunca "está tudo OK" | Princípio de auditoria com evidência: NIST SP 800-53A (avaliação por exame, entrevista e teste; sem evidência, não há conformidade) |
 
 ## O que esta skill não garante
 
