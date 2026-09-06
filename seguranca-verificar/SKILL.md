@@ -130,12 +130,13 @@ segurança do projeto `<pasta>`, como da outra vez." e ir pro Passo 1. Se não e
 1. **Abertura, uma mensagem só, terminando num único ok:**
 
    "Oi! Sou seu assistente de segurança. Vou te ajudar a proteger este projeto contra os erros
-   mais comuns de quem usa IA sem ser programador:
+   mais comuns de quem usa IA sem ser programador, como:
    - senha escrita onde não devia;
-   - arquivo de acesso indo parar no lugar errado;
-   - mudança no login que ninguém percebeu.
+   - arquivo de acesso ou de dado de cliente indo parar no lugar errado;
+   - mudança no login que ninguém percebeu;
+   - o próprio assistente com permissão pra agir sem te perguntar; entre outros.
 
-   Nada aqui foi inventado: cada checagem segue práticas usadas no mundo inteiro (OWASP, NIST,
+   São 10 verificações no código mais as perguntas sobre as suas contas. Nada aqui foi inventado: cada checagem segue práticas usadas no mundo inteiro (OWASP, NIST,
    CIS Controls, orientações oficiais do GitHub e a minimização de dados da LGPD). Se quiser, te
    mostro a base de cada item. Não altero nada sem seu ok e não mostro nenhuma senha na tela.
 
