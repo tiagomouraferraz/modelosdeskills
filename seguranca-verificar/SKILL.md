@@ -64,9 +64,14 @@ certo, diga ok pra eu seguir; se não, me corrige." O "ok" pedido nunca é solto
    ele esse alcance, dizer isso na hora e deixar a pessoa decidir. Formato: o que hoje não dá pra
    fazer; o que a ferramenta permitiria; o que ela dá de acesso (só leitura ou também escrita, e a
    quê); o passo a passo de instalação pra quem nunca fez, sempre pela fonte oficial; e a
-   recomendação, com a ressalva de que dar mais acesso ao agente é decisão dela. Só ferramenta
-   oficial da plataforma ou do próprio Claude Code; nunca de terceiro desconhecido. Casos comuns
-   desta skill:
+   recomendação, com a ressalva de que dar mais acesso ao agente é decisão dela. **O trade-off
+   é dito com todas as letras:** mais acesso significa que um erro do agente, ou uma instrução
+   maliciosa escondida em algo que ele leia, alcança mais coisa (o mesmo acesso que permite
+   conferir permite alterar). Por isso todo aumento de acesso vem junto com a proteção
+   correspondente: conector com ação de escrita entra na lista de aprovação manual do Claude Code
+   (`permissions.ask` no `.claude/settings.json` do projeto), e o modo de permissão fica em Auto
+   ou padrão, nunca Bypass (ver item 1.10). Só ferramenta oficial da plataforma ou do próprio
+   Claude Code; nunca de terceiro desconhecido. Casos comuns desta skill:
    - **Repositório privado, Dependabot, secret scanning (Passo 2):** hoje é pergunta. Com a
      ferramenta de linha de comando oficial do GitHub (`gh`, em cli.github.com, instalador pra
      Windows e Mac; depois `gh auth login` no terminal, seguindo as telas) o assistente consulta
@@ -83,7 +88,8 @@ certo, diga ok pra eu seguir; se não, me corrige." O "ok" pedido nunca é solto
 
 - **Só leitura, com exceções nomeadas e sempre autorizadas:** os dois arquivos da skill em
   `.claude/` do projeto, linha no `.gitignore`, tirar arquivo de dado do versionamento (sem apagar
-  da pasta), e a proteção mínima de commit (um arquivo na pasta do git). Nada mais é alterado.
+  da pasta), a proteção mínima de commit (um arquivo na pasta do git), e a lista de aprovação
+  manual em `.claude/settings.json` (item 1.10). Nada mais é alterado.
 - **Nenhum valor de senha ou chave aparece no chat, na configuração ou na referência.** O script
   corta a saída em arquivo e linha, mascara credencial em endereço de repositório, e a referência
   guarda só hash.
@@ -202,6 +208,7 @@ por item, `ITEM|ESTADO|EVIDÊNCIA`.
 | 1.7 | Integridade do arquivo de acesso contra a referência em hash, comparando a versão publicada ou, sem remoto, a cópia local, dizendo qual | alerta: se a pessoa não reconhece a mudança, investigar `git log -p` antes de tudo; se reconhece, `--baseline-atualizar` |
 | 1.8 | Arquivo de dado (csv, xlsx, pdf) rastreado | lê só o cabeçalho; coluna de dado pessoal = tratar como real; oferece tirar do versionamento e proteger no `.gitignore`, mesmo se a pessoa disser que é fictício |
 | 1.9 | Variável pública de frontend com nome sensível | explica que vai pro navegador de qualquer visitante; a correção é mover pro servidor |
+| 1.10 | Modo de permissão do próprio Claude Code (o assistente lê `.claude/settings.json` do projeto e `~/.claude/settings.json`) | Bypass ligado (`"defaultMode": "bypassPermissions"`, ou a pessoa disser que usa "bypass permissions") = problema; conector com ação de escrita fora de `permissions.ask` = problema. Texto abaixo |
 
 Onde se troca uma credencial, pelos serviços mais comuns: Meta (Configurações do negócio >
 Usuários do sistema > gerar token novo), Google (Console > APIs e serviços > Credenciais), GitHub
@@ -214,6 +221,19 @@ commit, inclusive fora do Claude Code, e bloqueia senha, chave ou arquivo de cre
 mais evita erro sem depender de você lembrar de nada. Diga ok pra eu instalar." Com o ok:
 `verificar.sh --instalar-protecao-commit`. Se já existir hook de outra origem, o script avisa e
 não mexe; explicar e seguir.
+
+**Item 1.10, o próprio agente como risco:** a pessoa que não programa costuma ligar o modo
+"Bypass permissions" porque ele para de pedir confirmação, e é exatamente isso que o torna
+perigoso: nesse modo o agente executa qualquer coisa, inclusive apagar arquivo, enviar e-mail ou
+alterar campanha, sem a pessoa ver antes. Texto: "Uma proteção que não está no seu código, mas no
+jeito de usar o Claude Code: o modo de permissão. No modo Bypass eu faço tudo sem te perguntar,
+o que inclui erro meu ou uma instrução escondida em algo que eu leia. No modo Auto (ou no padrão)
+eu peço seu ok antes de qualquer ação sensível. Recomendo Auto, sempre; a diferença no dia a dia
+é um clique a mais, a diferença em segurança é total. Como trocar: no Claude Code, aperte
+Shift+Tab até aparecer o modo desejado no rodapé, ou escolha no seletor de modo da extensão do VS
+Code. E pra cada ferramenta conectada que faz algo no mundo real (e-mail, Drive, anúncios), eu
+consigo colocar ela na lista de aprovação manual do projeto, que obriga a confirmação mesmo no
+Auto. Diga ok pra eu fazer isso agora."
 
 **Segredo no histórico, depois da troca (1.2):** "A chave antiga continua no histórico do projeto,
 mas já não abre nada; o que fica é um rastro. Opções: deixar como está, ou limpar o histórico,
