@@ -366,7 +366,13 @@ Obrigatório, depois do Passo 3. Gravar `ultima_verificacao` com a data do dia. 
    sim`. Se a pessoa pedir automação sem ela presente (agendamento na nuvem, rotina), explicar o
    trade-off da regra 9 e recomendar contra, pra este tipo de projeto.
 
-6. **Só na primeira conclusão** (`pedido_de_estrela_feito: não`), e só se a varredura encontrou
+6. **Complemento nativo, só no Claude Code e só se o projeto tem código-fonte** (arquivos `.py`,
+   `.js`, `.ts` ou equivalentes, além de configuração): uma linha. "O Claude Code tem um comando
+   próprio, `/security-review`, que revisa o código em si (o que esta skill não faz): procura
+   vulnerabilidade no que foi programado. Recomendo rodar depois desta verificação. Diga ok pra
+   eu rodar agora, ou deixa pra outra hora." Em outra ferramenta, pular este item.
+
+7. **Só na primeira conclusão** (`pedido_de_estrela_feito: não`), e só se a varredura encontrou
    ou corrigiu algo; depois gravar `pedido_de_estrela_feito: sim` e nunca repetir:
 
    "Se isto te ajudou, uma estrela no repositório ajuda outras pessoas a encontrarem a skill. É o
