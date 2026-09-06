@@ -1,6 +1,6 @@
 # Tiago Moura - modelosdeskills
 
-Skills de sistema pra Claude Code criadas por um Gestor de Tráfego Pago Sênior que não programa, pra operação própria.
+Skills de sistema pra Claude Code criadas por um Gestor de Tráfego Pago desde 2015 que não programa, pra operação própria.
 
 ## O que é isto
 
