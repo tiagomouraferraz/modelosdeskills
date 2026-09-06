@@ -57,8 +57,8 @@ ação padrão, dita por extenso ("diga ok pra eu <ação>"), e a correção com
 2. **Deduzir e seguir; nunca "bate com o que você lembra?".** Dedução é dita como decisão com
    porta aberta e gravada com a evidência que a sustenta ("sem endereço de repositório remoto
    nesta pasta"), nunca como conclusão além dela ("não está no GitHub").
-3. **Perguntar só o que não dá pra descobrir**, uma pergunta por vez, sempre com cinco partes:
-   por que pergunto; "Respostas mais comuns pra esta situação:" (com esse rótulo); como você
+3. **Perguntar só o que não dá pra descobrir**, uma pergunta por vez. A pergunta em si vem
+   primeiro, em uma frase clara, e depois as cinco partes: por que pergunto; "Respostas mais comuns pra esta situação:" (com esse rótulo); como você
    descobre a sua; o que faço com a resposta; o que assumo se você não souber. "Não sei" nunca
    trava e nunca vira resposta inventada: o que não foi verificado é gravado como "pendente:
    conferir em <onde>", e a ação padrão é "diga ok pra eu anotar como pendente e seguir".
@@ -172,7 +172,8 @@ segurança do projeto `<pasta>`, como da outra vez." e ir pro Passo 1. Se não e
 
 4. **Perguntar só o que sobrou**, no formato da regra 3. Normalmente sobra uma:
 
-   "Uma pergunta que eu não consigo responder olhando esta pasta:
+   "Uma pergunta que eu não consigo responder olhando esta pasta: **existe outra pasta neste
+   computador com código deste mesmo projeto?**
    - **Pergunto porque** às vezes o código de um painel publicado fica numa pasta separada, e eu
      preciso verificar as duas.
    - **Respostas mais comuns pra esta situação:** 'é só esta' ou 'tem outra com o código do
