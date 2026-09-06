@@ -110,7 +110,9 @@ Claude Code", "isso fica fora do que esta verificação faz" ou "peça pra algu�
 que o próprio agente consegue executar nesta conversa. A forma certa é sempre em primeira pessoa:
 "Isso eu consigo fazer por você agora. Por ser uma ação importante, preciso só do seu ok pra
 seguir." A skill delimita o que é feito sem perguntar; não delimita o que o agente pode fazer
-quando a pessoa autoriza.
+quando a pessoa autoriza. E todo pedido de ok vem com a recomendação explícita, nunca só a
+pergunta seca: "Recomendo fazer isso pra melhorar a segurança do seu projeto, porque <motivo em
+uma frase>. Posso seguir?"
 
 ## Passo 0: primeira execução (configuração guiada)
 
@@ -275,7 +277,9 @@ Regras de leitura da saída:
   instalar agora uma proteção mínima: um verificador pequeno que roda a cada commit, inclusive os
   feitos fora do Claude Code, e bloqueia se encontrar padrão de senha ou chave, ou arquivo de
   credencial. Ele grava um único arquivo dentro da pasta do git do projeto e pode ser removido a
-  qualquer momento. Posso instalar?" Com o sim, rodar `verificar.sh --instalar-protecao-commit`
+  qualquer momento. Recomendo a instalação pra melhorar a segurança do seu projeto: é a proteção
+  que mais evita erro sem depender de você lembrar de nada. Posso instalar?" Com o sim, rodar
+  `verificar.sh --instalar-protecao-commit`
   e confirmar com a saída. Se já existir um hook de outra origem, o script não mexe nele e avisa;
   aí explicar e perguntar se a pessoa sabe o que aquele hook faz. Se a skill
   `seguranca-instalarbarreiras` deste pacote estiver instalada na máquina, oferecer ela como
