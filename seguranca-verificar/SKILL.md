@@ -67,6 +67,13 @@ regra: "não existe certo ou errado aqui, existe o risco que você escolhe assum
 porque Y"; (4) a pergunta do que ela quer fazer. Se ela escolher a opção de mais risco, registrar
 no relatório que foi escolha consciente, sem insistir.
 
+**Nunca pedir julgamento técnico à pessoa sem antes fazer o próprio.** Pergunta do tipo "o
+arquivo está do jeito que deveria?" não pode ser feita crua: a pessoa não tem como saber. A ordem
+é sempre: (1) o assistente olha o que dá pra olhar (lê o arquivo, roda o script); (2) descreve em
+linguagem simples o que encontrou; (3) diz se aquilo bate com a boa prática e cita qual (a base
+está na seção "Em que cada checagem se baseia"); (4) dá a sugestão, como sugestão embasada; (5)
+só então pergunta o que ela quer fazer. "Não sei" da pessoa leva a seguir com a sugestão e anotar.
+
 ## Passo 0: primeira execução (configuração guiada)
 
 Se `.claude/seguranca-verificar.md` não existir na raiz do projeto, fazer esta configuração. Se
