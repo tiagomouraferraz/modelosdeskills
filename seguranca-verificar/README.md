@@ -13,6 +13,15 @@ Skill de verificação de segurança pra projeto de Claude Code de quem não pro
    sustentam o projeto) e só pergunta o que não dá pra ver por ali, explicando por que pergunta e
    como você descobre a resposta. "Não sei" é sempre resposta válida.
 
+## Em que se baseia
+
+Nenhuma checagem foi inventada. Cada item corresponde a uma prática documentada em fonte reconhecida
+pela comunidade de segurança e de desenvolvimento: OWASP (Top 10 e Secrets Management Cheat Sheet),
+NIST (SP 800-53 e SP 800-63B), CIS Controls v8, orientações oficiais do GitHub, Twelve-Factor App,
+e o princípio de minimização de dados da LGPD e do GDPR. A tabela com a fonte de cada checagem está
+no `SKILL.md`, seção "Em que cada checagem se baseia". O script é uma implementação simplificada
+dessas práticas pra quem não programa; não é certificação nem cobertura completa dos padrões.
+
 ## O que ela faz
 
 Roda um script de leitura (`verificar.sh`) que confere se há senha ou chave escrita no código ou
@@ -38,15 +47,6 @@ alcance do agente. Nunca "está tudo OK". Comando que falha vira "erro", não "c
 - Não garante proteção contra golpe direcionado, falha da plataforma ou invasão da sua conta por
   fora do projeto. Detector de segredo funciona por formato conhecido: senha simples em variável
   de nome inocente passa.
-
-## Em que se baseia
-
-Nenhuma checagem foi inventada. Cada item corresponde a uma prática documentada em fonte reconhecida
-pela comunidade de segurança e de desenvolvimento: OWASP (Top 10 e Secrets Management Cheat Sheet),
-NIST (SP 800-53 e SP 800-63B), CIS Controls v8, orientações oficiais do GitHub, Twelve-Factor App,
-e o princípio de minimização de dados da LGPD e do GDPR. A tabela com a fonte de cada checagem está
-no `SKILL.md`, seção "Em que cada checagem se baseia". O script é uma implementação simplificada
-dessas práticas pra quem não programa; não é certificação nem cobertura completa dos padrões.
 
 ## Arquivos
 
