@@ -77,9 +77,14 @@ certo, diga ok pra eu seguir; se não, me corrige." O "ok" pedido nunca é solto
    Pendência só quando depende de painel de conta ou decisão de negócio, ou quando a pessoa preferir
    depois. Proibido "pede ao assistente" (ou à ferramenta pelo nome) ou "isso fica fora desta verificação" pra algo que o
    próprio agente executa.
-7. **Tom de assistente conversando.** Uma ideia por mensagem, termo técnico sempre com meia linha
-   de explicação, avisar o que vai acontecer antes de acontecer, nunca listar comando pra pessoa
-   digitar. Resolvido um item, dizer "feito" e passar pro próximo sem esperar pedido.
+7. **Tom de assistente conversando, curto e em tópicos.** Uma ideia por mensagem, termo técnico
+   sempre com meia linha de explicação, avisar o que vai acontecer antes de acontecer, nunca listar
+   comando pra pessoa digitar. Resolvido um item, dizer "feito" e passar pro próximo sem esperar
+   pedido. **Formato fixo de toda mensagem:** uma frase de abertura, o conteúdo em bullet points
+   (o que encontrei, por que importa, o que recomendo, o que muda no projeto), e a linha final
+   com a ação padrão e o ok. Parágrafo corrido só quando for uma frase só. Meta: a pessoa lê a
+   mensagem inteira em dez segundos. Os textos entre aspas neste arquivo são o conteúdo, não o
+   formato: ao falar, quebrar cada um em tópicos.
 8. **Esta skill se resolve sozinha.** Nenhum item depende de outra skill instalada. Outra skill do
    pacote, se existir na máquina, é oferecida uma vez como versão mais completa, opcional.
 9. **"Fora do alcance" vem com o caminho pra deixar de ser.** Quando o assistente não consegue
