@@ -33,6 +33,7 @@ Não é produto. É o retrato de uma operação real, compartilhado pra ajudar c
 - Workspace em português, com arquivo de instruções (AGENTS.md), skills próprias e hooks de segurança.
 - Criadas e usadas entre agosto e setembro de 2026.
 - **Testadas só nesse ambiente.** Nada foi testado em Mac ou Linux. Onde uma skill tiver versão pra esses sistemas, o README dela diz se foi testada ou não.
+- **Escritas pra funcionar em qualquer assistente de IA** que leia arquivo de instrução e rode shell (Claude Code, Codex, Cursor, Gemini CLI ou outro). O Claude Code aparece nos textos só como exemplo concreto, e cada skill traz uma tabela de portabilidade com o equivalente nas outras ferramentas. Só o Claude Code foi testado.
 
 ## Limitações
 
