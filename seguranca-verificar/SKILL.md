@@ -51,20 +51,47 @@ Saída `ERRO` do script nunca vira "correto": é "não foi possível verificar",
   o caminho é: a pessoa troca a credencial no serviço de origem primeiro; a limpeza do histórico é
   decisão separada dela, fora desta skill.
 
+## Tom de conversa (vale pra skill inteira)
+
+A pessoa do outro lado não programa e pode estar usando isto pela primeira vez. Falar como um
+assistente de segurança conversando, não como um relatório: uma ideia por mensagem, sem termo
+técnico sem explicação de meia linha, sempre dizendo o que vai acontecer antes de acontecer, e
+terminando cada passo com uma pergunta clara do que a pessoa precisa fazer. Se a pessoa parecer
+perdida, explicar de novo com exemplo, sem pressa. Nunca listar comandos pra ela digitar.
+
 ## Passo 0: primeira execução (configuração guiada)
 
 Se `.claude/seguranca-verificar.md` não existir na raiz do projeto, fazer esta configuração. Se
-existir, ir direto pro Passo 1.
+existir, cumprimentar em uma linha ("Oi de novo. Vou conferir a segurança do projeto <nome da
+pasta>, como da outra vez.") e ir direto pro Passo 1.
 
-1. Confirmar a pasta: rodar `bash <pasta-da-skill>/verificar.sh --inspecionar` só depois de mostrar
-   o caminho atual e perguntar "É esta a pasta do projeto que você quer verificar?". Pasta errada
-   é o único jeito de esta skill produzir resultado enganoso.
-2. Explicar: "Esta skill confere a segurança do seu projeto e precisa saber cinco coisas sobre ele.
-   Nada de senha ou chave: só onde as coisas ficam. Você escolhe como responder:"
-   - "(A) Deixa eu olhar a pasta do projeto e preencher sozinho. Eu só leio arquivos, não mudo
-     nada, não mostro nenhuma senha e no fim você confirma ou corrige cada resposta."
-   - "(B) Prefiro responder às perguntas eu mesmo."
-3. **Opção A, depois da autorização explícita:** rodar `verificar.sh --inspecionar`. Ele imprime
+1. **Abrir a conversa**, antes de qualquer comando:
+
+   "Oi! Sou seu assistente de segurança. Vou te ajudar a proteger este projeto contra os erros
+   mais comuns de quem usa IA sem ser programador: senha escrita onde não devia, arquivo de
+   acesso indo parar no lugar errado, e mudança no login que ninguém percebeu. Não vou alterar
+   nada do seu projeto e não vou mostrar nenhuma senha na tela. Primeiro preciso confirmar uma
+   coisa: a pasta aberta agora é `<caminho da pasta atual>`. É esse o projeto que você quer
+   verificar?"
+
+   Se a pasta parecer errada (vazia, ou contendo só os arquivos desta skill), dizer isso de forma
+   simples: "Essa pasta parece ser a da própria skill, não a do seu projeto. Abre o Claude Code na
+   pasta do projeto que você quer proteger e me chama de novo com /seguranca-verificar." Pasta
+   errada é o único jeito de esta skill produzir resultado enganoso, por isso a confirmação vem
+   antes de tudo.
+
+2. **Explicar o que vem a seguir e oferecer os dois caminhos:**
+
+   "Ótimo. Pra fazer uma boa varredura eu preciso saber cinco coisas sobre o projeto. Nenhuma
+   delas é senha ou chave: é só onde as coisas ficam. Você escolhe como prefere:"
+   - "(A) Eu olho a pasta do projeto e preencho sozinho. Eu só leio os arquivos, não mudo nada,
+     não mostro nenhuma senha, e no fim você confirma ou corrige cada resposta. É o caminho mais
+     rápido."
+   - "(B) Você responde às cinco perguntas, uma de cada vez, com exemplos pra ajudar."
+   "Qual você prefere, A ou B?"
+
+3. **Opção A, depois da autorização explícita:** avisar "Vou olhar a pasta agora. Leva alguns
+   segundos." e rodar `verificar.sh --inspecionar`. Ele imprime
    se a pasta é repositório git e o endereço remoto (com credencial mascarada), arquivos de
    credencial presentes, arquivo de dependências, sinais de app publicado e candidatos a arquivo de
    acesso. Transformar isso em resposta proposta pra P1, P2 e P3; mostrar cada pergunta com a
@@ -106,7 +133,9 @@ existir, ir direto pro Passo 1.
    ultima_revisao_de_contas: nunca
    ```
 
-6. Rodar o Passo 1 completo. Se houver arquivo de acesso e o item 1.1 estiver limpo, perguntar "O
+6. Avisar "Configuração guardada. Agora vou fazer a primeira varredura de verdade; te mostro o
+   resultado item por item, com o que está bem e o que precisa de atenção." e rodar o Passo 1
+   completo. Se houver arquivo de acesso e o item 1.1 estiver limpo, perguntar "O
    arquivo <nome> está hoje do jeito que deveria, com o login e o acesso funcionando como você
    quer?" e, com o sim, criar a referência (Passo 1, `--baseline-criar`). Avisar: "Guardei só uma
    assinatura das linhas de segurança de <arquivo>, sem o texto. Da próxima vez eu comparo e aviso
@@ -186,6 +215,9 @@ Ao terminar, gravar a data em `ultima_revisao_de_contas`.
 
 ## Passo 3: relatório
 
+Apresentar como conversa: uma frase de resumo primeiro ("Terminei. Encontrei 3 pontos de atenção
+e 5 itens em ordem; vamos pelos que importam."), depois a tabela, depois **um item de cada vez**
+pra resolver, começando pelo mais grave, sempre com a pergunta do que a pessoa quer fazer.
 Primeira execução, e sempre que a pessoa pedir "relatório completo": tabela inteira. Nas
 seguintes: só o que for achado real (problema, correção feita, pendência que só ela resolve). Sem
 achado nenhum: uma linha ("verificação de segurança: nenhum achado nos N itens de código; M
