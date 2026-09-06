@@ -74,6 +74,23 @@ linguagem simples o que encontrou; (3) diz se aquilo bate com a boa prática e c
 está na seção "Em que cada checagem se baseia"); (4) dá a sugestão, como sugestão embasada; (5)
 só então pergunta o que ela quer fazer. "Não sei" da pessoa leva a seguir com a sugestão e anotar.
 
+**Plataforma que o script não reconhece não é beco sem saída.** A lista de serviços do
+`verificar.sh` é finita; o raciocínio não é. Quando a pessoa disser que usa uma plataforma que o
+script não reconheceu (ex: Bubble, Wix, Hotmart, Notion, um CRM), aplicar as mesmas práticas da
+seção "Em que cada checagem se baseia" àquela plataforma: onde a credencial deve morar nela, como
+o acesso é controlado, como conferir compartilhamento e visibilidade, onde se troca uma chave.
+Dizer sempre o que é conhecimento geral sobre a plataforma ("pelo que eu sei da Vercel, as
+variáveis ficam em Settings > Environment Variables") e o que foi verificado de fato nos arquivos.
+Se não souber a plataforma, dizer isso e perguntar onde a pessoa guarda as senhas dela e quem
+consegue abrir o que ela publica; as duas respostas bastam pra continuar.
+
+**Ação de segurança que o assistente consegue executar não fica em aberto.** Se um item termina
+numa correção que uma skill instalada ou um comando seguro resolve (instalar a proteção de commit,
+acrescentar linha ao `.gitignore`, criar a referência de integridade), oferecer executar agora:
+dizer o que a ação faz, o que muda no projeto, e pedir autorização. "Fica registrado como
+pendência" só quando a ação depende de algo fora do alcance (painel de conta, decisão de negócio)
+ou quando a pessoa disser que prefere fazer depois.
+
 ## Passo 0: primeira execução (configuração guiada)
 
 Se `.claude/seguranca-verificar.md` não existir na raiz do projeto, fazer esta configuração. Se
@@ -215,7 +232,7 @@ item, `ITEM|ESTADO|EVIDÊNCIA`, com estes itens:
 | 1.3 | Arquivo de credencial rastreado (`.env`, `secrets.toml`, `credentials.json`, `token.json`, chave `.pem`, etc.) | idem |
 | 1.4 | `.gitignore` cobrindo esses arquivos | `PROBLEMA` = propor as linhas e aplicar com confirmação |
 | 1.5 | Dependência com versão exata (Python) ou lockfile (Node) | `INFO`: informativo, sem ação obrigatória |
-| 1.6 | Hook `pre-commit` presente e varrendo segredo | `PROBLEMA` = apontar a skill `seguranca-instalarbarreiras` deste repositório (ou um verificador como gitleaks) |
+| 1.6 | Hook `pre-commit` presente e varrendo segredo | `PROBLEMA` = oferecer instalar agora (ver "Item 1.6" abaixo), nunca só registrar pendência |
 | 1.7 | Integridade do arquivo de acesso contra a referência em hash, comparando a versão publicada (`origin/HEAD`, `main` ou `master`) ou, sem remoto acessível, a cópia local, dizendo qual | `PROBLEMA` = alerta: se a pessoa não reconhece a mudança, investigar antes de tudo; se reconhece, `--baseline-atualizar` |
 | 1.8 | Arquivo de dado rastreado (csv, xlsx, pdf) que pode conter dado de cliente | `INFO`: pedir pra pessoa confirmar o conteúdo |
 | 1.9 | Variável pública de frontend com nome sensível (vai pro navegador de qualquer visitante) | `PROBLEMA` |
@@ -232,6 +249,17 @@ Regras de leitura da saída:
   pensar em histórico. Onde se troca, pelos serviços mais comuns: Meta (Configurações do negócio >
   Usuários do sistema > gerar token novo), Google (Console > APIs e serviços > Credenciais), GitHub
   (Settings > Developer settings > tokens).
+- **Item 1.6 com problema (sem proteção de commit):** conferir se a skill
+  `seguranca-instalarbarreiras` está instalada (pasta com esse nome em `~/.claude/skills/` ou em
+  `.claude/skills/` do projeto). Se estiver: "Nada impede hoje que uma senha entre no git de novo,
+  como aconteceu com `<arquivo>`. Eu consigo instalar agora uma barreira que confere cada commit
+  antes de salvar e bloqueia se encontrar senha ou chave; ela também bloqueia o agente de escrever
+  senha em arquivo. Ela mexe em dois lugares: uma pasta de configuração do projeto e o próprio git.
+  Posso instalar?" Com o sim, chamar a skill e voltar pra verificação quando ela terminar. Se não
+  estiver instalada: explicar o mesmo risco, dar o caminho (repositório `modelosdeskills`, aba
+  Releases, skill `seguranca-instalarbarreiras`; enquanto ela não estiver publicada, uma
+  ferramenta como gitleaks faz a parte do commit), oferecer guiar a instalação agora, e só
+  registrar como pendência se a pessoa preferir fazer depois.
 - **Segredo que fica no histórico (1.2 depois da troca da credencial):** aplicar o formato de
   decisão com recomendação. Texto-base:
 
