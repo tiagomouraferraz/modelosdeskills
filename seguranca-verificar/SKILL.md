@@ -28,7 +28,7 @@ pessoa, do jeito que está, adaptando só o que estiver entre `<...>`.
 precisa de mais do que "ok" em dois casos: informação que o assistente não consegue obter sozinho,
 e ação que altera o projeto (aí o "ok" é a autorização). Toda mensagem termina com **uma única
 ação padrão**, que o "ok" dispara, e a correção como exceção: "Vou seguir com X. Se estiver
-certo, só me diz ok; se não, me corrige."
+certo, diga ok pra eu seguir; se não, me corrige." O "ok" pedido nunca é solto: a frase diz sempre o que ele dispara ("diga ok pra eu <ação>").
 
 1. **Descobrir antes de perguntar**, nesta ordem: arquivos do projeto → script → documentação
    oficial na internet → pergunta. Pressupor que a pessoa não sabe nada do próprio projeto.
@@ -38,7 +38,7 @@ certo, só me diz ok; se não, me corrige."
    instrução. Separar o que é conhecimento geral do que foi verificado nos arquivos.
 2. **Deduzir e seguir; nunca "bate com o que você lembra?".** O que foi deduzido é dito como
    decisão com porta aberta: "Pelo que vi, o painel ainda não está no ar e as credenciais não
-   moram em arquivo. Sigo assim. Se estiver publicado em algum lugar, me diz onde; senão, ok."
+   moram em arquivo. Sigo assim. Se estiver publicado em algum lugar, me diz onde. Senão, diga ok pra eu seguir."
 3. **Perguntar só o que não dá pra descobrir**, uma pergunta por vez, sempre com: por que
    pergunto, respostas mais comuns, como você descobre a sua, o que faço com a resposta, e o que
    assumo se você não souber. "Não sei" nunca trava: vira a suposição mais segura, anotada.
@@ -98,7 +98,7 @@ segurança do projeto `<pasta>`, como da outra vez." e ir pro Passo 1. Se não e
    A pasta aberta é `<caminho>`. Pelo que tem nela (`<dois ou três nomes>`), me parece um projeto
    de <tipo>, e é nele que vou focar. Primeiro passo: olhar a pasta, só leitura, pra eu mesmo
    descobrir a maior parte do que preciso e te perguntar o mínimo. Recomendo começar por aí. Se
-   estiver tudo certo, só me diz ok; se a pasta não for essa, me avisa."
+   a pasta não for essa, me avisa. Se estiver tudo certo, diga ok pra eu começar a olhar."
 
    Exceção, a única em que a abertura trava: pasta vazia, ou só com os arquivos desta skill. "Essa
    pasta parece ser a da própria skill (ou está vazia). Abre o Claude Code na pasta do projeto que
@@ -120,17 +120,17 @@ segurança do projeto `<pasta>`, como da outra vez." e ir pro Passo 1. Se não e
    "Pronto. O que eu descobri: <duas ou três frases em linguagem simples, ex: é um painel em
    Streamlit que lê planilhas do Google; o código fica no GitHub; o `app.py` faz o login e decide o
    que cada pessoa vê; já achei uma chave escrita dentro de `config.py`, que vamos resolver daqui a
-   pouco>. Vou seguir com isso. Se algo não bater, me corrige; senão, ok."
+   pouco>. Se algo não bater, me corrige. Senão, diga ok pra eu seguir com a verificação."
 
 4. **Perguntar só o que sobrou**, no formato da regra 3. Normalmente sobram duas:
    - **Outras pastas:** "Às vezes o código de um painel publicado fica numa pasta separada, e eu
      preciso verificar as duas. Comum: 'é só esta' ou 'tem outra com o código do painel'. Como
      descobrir: se você baixou algum repositório do GitHub pra este projeto, ele está em outra
-     pasta, com o nome do repositório. Se não souber, sigo só com esta e anoto. Ok?"
+     pasta, com o nome do repositório. Se não souber, sigo só com esta e anoto. Diga ok pra eu seguir, ou me passa o caminho da outra pasta."
    - **Quem abre o app publicado** (só se houver app): "Painel com dado de cliente aberto pra
      qualquer pessoa com o link é o vazamento mais comum. Comum: 'só quem eu liberei' ou 'qualquer
      pessoa com o link'. Como conferir: Streamlit Cloud, Settings > Sharing; Vercel, Settings >
-     Deployment Protection. Se não souber agora, anoto como pendência com esse caminho. Ok?"
+     Deployment Protection. Se não souber agora, anoto como pendência com esse caminho. Diga ok pra eu seguir, ou me diz o que está marcado lá."
 
 5. Gravar `.claude/seguranca-verificar.md`, nunca com senha ou chave:
 
@@ -152,7 +152,7 @@ segurança do projeto `<pasta>`, como da outra vez." e ir pro Passo 1. Se não e
    acesso (OWASP A01 e menor privilégio do NIST): primeiro autenticar, depois mostrar só o que é
    daquela pessoa. <Se houver ponto estranho: 'Um ponto me chamou atenção: X, que significa Y.'>
    Vou guardar uma assinatura dessas linhas, sem o texto, pra te avisar se algo mudar por fora.
-   Recomendo. Ok?" Com o ok: `--baseline-criar` e "Guardado."
+   Recomendo. Diga ok pra eu guardar." Com o ok: `--baseline-criar` e "Guardado."
 
 7. Seguir pro Passo 3 com o resultado já obtido (rodar de novo com `--acesso` se houver arquivo).
 
@@ -192,7 +192,7 @@ Usuários do sistema > gerar token novo), Google (Console > APIs e serviços > C
 `<arquivo>`. Eu consigo instalar agora uma proteção mínima: um verificador pequeno que roda a cada
 commit, inclusive fora do Claude Code, e bloqueia senha, chave ou arquivo de credencial. É um
 único arquivo na pasta do git, removível a qualquer momento. Recomendo, porque é a proteção que
-mais evita erro sem depender de você lembrar de nada. Ok?" Com o ok:
+mais evita erro sem depender de você lembrar de nada. Diga ok pra eu instalar." Com o ok:
 `verificar.sh --instalar-protecao-commit`. Se já existir hook de outra origem, o script avisa e
 não mexe; explicar e seguir.
 
