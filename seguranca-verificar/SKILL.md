@@ -171,11 +171,23 @@ pasta>, como da outra vez.") e ir direto pro Passo 1.
 6. Avisar "Configuração guardada. Agora te mostro o resultado da varredura item por item, com o
    que está bem e o que precisa de atenção, e vamos resolver um de cada vez." e seguir pro Passo 3
    com o resultado já obtido no item 3 (rodar de novo com `--acesso` se um arquivo de acesso foi
-   confirmado). Se houver arquivo de acesso e o item 1.1 estiver limpo, perguntar "O
-   arquivo <nome> está hoje do jeito que deveria, com o login e o acesso funcionando como você
-   quer?" e, com o sim, criar a referência (Passo 1, `--baseline-criar`). Avisar: "Guardei só uma
-   assinatura das linhas de segurança de <arquivo>, sem o texto. Da próxima vez eu comparo e aviso
-   se algo mudou por fora."
+   confirmado). Se houver arquivo de acesso e o item 1.1 estiver limpo, **ler o arquivo de acesso
+   antes de perguntar qualquer coisa** e conferir três pontos: existe exigência de login antes de
+   mostrar dado? o dado mostrado é filtrado pela pessoa logada (cada um vê só o seu)? existe
+   alguma liberação geral suspeita (lista de administradores vazia ou com "*", filtro comentado,
+   "todos podem ver")? Aí falar assim:
+
+   "Li o `<arquivo>`. Em linguagem simples, ele faz o seguinte: <descrição em duas frases, ex:
+   exige login com conta Google antes de mostrar qualquer coisa, e mostra só os dados do cliente
+   ligado ao e-mail de quem entrou>. Isso bate com a boa prática de controle de acesso (OWASP Top
+   10, item A01, e o princípio de menor privilégio do NIST): primeiro autenticar, depois mostrar
+   só o que é daquela pessoa. <Se houver ponto estranho: 'Um ponto me chamou atenção: X, que
+   significa Y.'> Minha sugestão, com base nisso: guardar agora uma assinatura dessas linhas de
+   segurança, sem o texto, pra eu te avisar se algo mudar por fora daqui pra frente. Quer que eu
+   guarde, ou prefere revisar o arquivo antes?"
+
+   Com o sim, criar a referência (Passo 1, `--baseline-criar`) e confirmar: "Guardado. Da próxima
+   vez eu comparo e aviso se algo mudou." Com "não sei", seguir com a sugestão e anotar.
 
 ## Gatilho
 
