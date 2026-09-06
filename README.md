@@ -2,6 +2,17 @@
 
 Skills de sistema pra Claude Code criadas por um Gestor de Tráfego Pago desde 2015 que não programa, pra operação própria.
 
+## Como instalar
+
+1. Baixe o zip da skill na aba **Releases**.
+2. Descompacte dentro da pasta de skills do seu Claude Code. O zip já vem com a pasta no nome certo.
+   - Windows: `C:\Users\SEU-USUARIO\.claude\skills\`
+   - Mac ou Linux: `~/.claude/skills/`
+   - A pasta `.claude` é oculta. Se não aparecer, digite o caminho direto na barra de endereço do explorador de arquivos.
+   - Alternativa: descompacte dentro de `.claude\skills\` de um projeto específico, e a skill só existe naquele projeto.
+3. Abra o Claude Code e chame a skill pelo nome, com barra na frente (ex: `/nome-da-skill`). Na primeira chamada ela faz a configuração inicial.
+
+
 ## O que é isto
 
 Sou Tiago Moura, profissional de Tráfego Pago desde 2015. Uso o Claude Code no dia a dia da minha operação e, como não programo, fui criando skills pra me proteger dos erros que poderia cometer: senha em código, arquivo errado subindo pro git, skill que parece boa e não é, entre outros. Este repositório junta versões genéricas das skills que uso no meu projeto para ajudar outros profissionais em contexto semelhante ao meu.
@@ -30,16 +41,6 @@ Rode, teste, ajuste e molde cada skill ao seu projeto antes de confiar nela. O q
 ## Sem suporte
 
 Não há atendimento a pedido de ajuda, issue ou pull request. O repositório é compartilhado como está. Quem quiser evoluir, faz um fork.
-
-## Como instalar
-
-1. Baixe o zip da skill na aba **Releases**.
-2. Descompacte dentro da pasta de skills do seu Claude Code. O zip já vem com a pasta no nome certo.
-   - Windows: `C:\Users\SEU-USUARIO\.claude\skills\`
-   - Mac ou Linux: `~/.claude/skills/`
-   - A pasta `.claude` é oculta. Se não aparecer, digite o caminho direto na barra de endereço do explorador de arquivos.
-   - Alternativa: descompacte dentro de `.claude\skills\` de um projeto específico, e a skill só existe naquele projeto.
-3. Abra o Claude Code e chame a skill pelo nome, com barra na frente (ex: `/nome-da-skill`). Na primeira chamada ela faz a configuração inicial.
 
 ## Skills
 
