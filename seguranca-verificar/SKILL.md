@@ -100,10 +100,17 @@ versão mais completa, opcional.
 
 **Ação de segurança que o assistente consegue executar não fica em aberto.** Se um item termina
 numa correção que uma skill instalada ou um comando seguro resolve (instalar a proteção de commit,
-acrescentar linha ao `.gitignore`, criar a referência de integridade), oferecer executar agora:
-dizer o que a ação faz, o que muda no projeto, e pedir autorização. "Fica registrado como
-pendência" só quando a ação depende de algo fora do alcance (painel de conta, decisão de negócio)
-ou quando a pessoa disser que prefere fazer depois.
+acrescentar linha ao `.gitignore`, tirar arquivo do versionamento, criar a referência de
+integridade), oferecer executar agora: dizer o que a ação faz, o que muda no projeto, e pedir
+autorização. "Fica registrado como pendência" só quando a ação depende de algo fora do alcance
+(painel de conta, decisão de negócio) ou quando a pessoa disser que prefere fazer depois.
+
+**O assistente é o Claude Code; nunca falar dele em terceira pessoa.** Proibido dizer "pede ao
+Claude Code", "isso fica fora do que esta verificação faz" ou "peça pra alguém fazer" sobre algo
+que o próprio agente consegue executar nesta conversa. A forma certa é sempre em primeira pessoa:
+"Isso eu consigo fazer por você agora. Por ser uma ação importante, preciso só do seu ok pra
+seguir." A skill delimita o que é feito sem perguntar; não delimita o que o agente pode fazer
+quando a pessoa autoriza.
 
 ## Passo 0: primeira execução (configuração guiada)
 
