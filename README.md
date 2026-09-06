@@ -12,6 +12,14 @@ Skills de sistema pra Claude Code criadas por um Gestor de Tráfego Pago desde 2
    - Alternativa: descompacte dentro de `.claude\skills\` de um projeto específico, e a skill só existe naquele projeto.
 3. Abra o Claude Code e chame a skill pelo nome, com barra na frente (ex: `/nome-da-skill`). Na primeira chamada ela faz a configuração inicial.
 
+## Skills
+
+As skills entram uma por vez, cada uma com o próprio zip na aba **Releases** e um README próprio dentro da pasta.
+
+| Skill | O que faz | Pasta |
+| --- | --- | --- |
+| `/seguranca-verificar` | Verificação de segurança do projeto: segredo em código ou no histórico, credencial fora do `.gitignore`, proteção de commit, integridade do arquivo de login, e as perguntas que só você responde. Cada item em um de três estados, nunca "está tudo OK". | [seguranca-verificar](seguranca-verificar/) |
+
 ## O que é isto
 
 Sou Tiago Moura, profissional de Tráfego Pago desde 2015. Uso o Claude Code no dia a dia da minha operação e, como não programo, fui criando skills pra me proteger dos erros que poderia cometer: senha em código, arquivo errado subindo pro git, skill que parece boa e não é, entre outros. Este repositório junta versões genéricas das skills que uso no meu projeto para ajudar outros profissionais em contexto semelhante ao meu.
@@ -44,14 +52,6 @@ Não há atendimento a pedido de ajuda, issue ou pull request. O repositório é
 ## Responsabilidade
 
 Uso por sua conta e risco. Os efeitos diretos e indiretos de instalar e executar qualquer skill deste repositório são de responsabilidade de quem instala e executa, não minha. Meu papel aqui é só compartilhar algo que está funcionando pra mim, no meu contexto. Leia cada skill antes de usar, teste primeiro num projeto sem dado importante e mantenha backup do que for seu. A licença MIT diz isso em termos legais ("sem garantia de qualquer tipo"); este parágrafo diz em português claro.
-
-## Skills
-
-As skills entram uma por vez, cada uma com o próprio zip na aba **Releases** e um README próprio dentro da pasta.
-
-| Skill | O que faz | Pasta |
-| --- | --- | --- |
-| `/seguranca-verificar` | Verificação de segurança do projeto: segredo em código ou no histórico, credencial fora do `.gitignore`, proteção de commit, integridade do arquivo de login, e as perguntas que só você responde. Cada item em um de três estados, nunca "está tudo OK". | [seguranca-verificar](seguranca-verificar/) |
 
 ## Licença
 
