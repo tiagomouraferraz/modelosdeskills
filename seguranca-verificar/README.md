@@ -2,6 +2,15 @@
 
 Skill de verificação de segurança pra projeto de Claude Code de quem não programa.
 
+## Como instalar
+
+1. Baixe o zip na aba Releases do repositório.
+2. Descompacte dentro de `~/.claude/skills/` (Windows: `C:\Users\SEU-USUARIO\.claude\skills\`).
+   A pasta `seguranca-verificar` já vem com o nome certo.
+3. Abra o Claude Code na pasta do seu projeto e chame `/seguranca-verificar`. Na primeira vez ela
+   confirma a pasta, faz cinco perguntas em linguagem simples, e você pode autorizar que ela olhe a
+   pasta e responda sozinha, só pra você confirmar.
+
 ## O que ela faz
 
 Roda um script de leitura (`verificar.sh`) que confere se há senha ou chave escrita no código ou
@@ -33,15 +42,6 @@ alcance do agente. Nunca "está tudo OK". Comando que falha vira "erro", não "c
 - `SKILL.md`: a instrução que o Claude Code segue.
 - `verificar.sh`: o script de leitura. Roda no Git Bash (que o Claude Code usa no Windows) e em
   qualquer shell de Mac ou Linux. Pode ser lido inteiro antes de usar; não tem nada escondido.
-
-## Como instalar
-
-1. Baixe o zip na aba Releases do repositório.
-2. Descompacte dentro de `~/.claude/skills/` (Windows: `C:\Users\SEU-USUARIO\.claude\skills\`).
-   A pasta `seguranca-verificar` já vem com o nome certo.
-3. Abra o Claude Code na pasta do seu projeto e chame `/seguranca-verificar`. Na primeira vez ela
-   confirma a pasta, faz cinco perguntas em linguagem simples, e você pode autorizar que ela olhe a
-   pasta e responda sozinha, só pra você confirmar.
 
 ## Contexto de origem
 
