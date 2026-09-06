@@ -147,15 +147,11 @@ segurança do projeto `<pasta>`, como da outra vez." e ir pro Passo 1. Se não e
    que cada pessoa vê; já achei uma chave escrita dentro de `config.py`, que vamos resolver daqui a
    pouco>. Se algo não bater, me corrige. Senão, diga ok pra eu seguir com a verificação."
 
-4. **Perguntar só o que sobrou**, no formato da regra 3. Normalmente sobram duas:
+4. **Perguntar só o que sobrou**, no formato da regra 3. Normalmente sobra uma:
    - **Outras pastas:** "Às vezes o código de um painel publicado fica numa pasta separada, e eu
      preciso verificar as duas. Respostas mais comuns pra esta situação: 'é só esta' ou 'tem outra com o código do painel'. Como
      descobrir: se você baixou algum repositório do GitHub pra este projeto, ele está em outra
      pasta, com o nome do repositório. Se não souber, sigo só com esta e anoto. Diga ok pra eu seguir, ou me passa o caminho da outra pasta."
-   - **Quem abre o app publicado** (só se houver app): "Painel com dado de cliente aberto pra
-     qualquer pessoa com o link é o vazamento mais comum. Respostas mais comuns pra esta situação: 'só quem eu liberei' ou 'qualquer
-     pessoa com o link'. Como conferir: Streamlit Cloud, Settings > Sharing; Vercel, Settings >
-     Deployment Protection. Se não souber agora, anoto como pendência com esse caminho. Diga ok pra eu seguir, ou me diz o que está marcado lá."
 
 5. Gravar `.claude/seguranca-verificar.md`, nunca com senha ou chave:
 
@@ -182,7 +178,7 @@ segurança do projeto `<pasta>`, como da outra vez." e ir pro Passo 1. Se não e
    Vou guardar uma assinatura dessas linhas, sem o texto, pra te avisar se algo mudar por fora.
    Recomendo. Diga ok pra eu guardar." Com o ok: `--baseline-criar` e "Guardado."
 
-7. Seguir pro Passo 3 com o resultado já obtido (rodar de novo com `--acesso` se houver arquivo).
+7. Seguir pro Passo 2 com o resultado já obtido (rodar de novo com `--acesso` se houver arquivo).
 
 ## Gatilho
 
@@ -191,12 +187,12 @@ segurança do projeto `<pasta>`, como da outra vez." e ir pro Passo 1. Se não e
 - **A pedido**, a qualquer momento.
 - **Lembrete a cada 30 dias**, se a pessoa aceitou no encerramento: ao abrir sessão no projeto
   com `ultima_verificacao` há mais de 30 dias, avisar e propor rodar; roda só com o ok dela.
-- **Contas a cada 90 dias:** Passo 2 completo na primeira execução e quando
+- **Contas a cada 90 dias:** Passo 3 completo na primeira execução e quando
   `ultima_revisao_de_contas` passar de 90 dias; nas demais rodadas, só as pendentes.
 
 Nunca rodar sem a pessoa presente: o lembrete propõe, a pessoa decide.
 
-## Passo 1: camada de código (o script verifica)
+## Passo 1: varredura de código (o script verifica)
 
 Na pasta do projeto: `bash <pasta-da-skill>/verificar.sh`, com `--acesso <arquivo>` quando houver
 arquivo de acesso. Repetir com `--pasta "<caminho>"` pra cada `outras_pastas`. Saída: uma linha
@@ -248,14 +244,32 @@ o dano é pequeno. Risco de limpar: feito errado, perde trabalho ou quebra a có
 tiver o projeto; é operação que eu não faço por você e que precisa de backup antes. Não existe
 certo ou errado, só o risco que você escolhe. Recomendo: repositório privado que vai continuar
 privado, deixar e anotar; público ou com chance de virar, limpar pelo passo a passo oficial do
-GitHub ('Removing sensitive data from a repository'), com backup. Sigo com a recomendação? Ok
-ou me diz o que prefere." O mesmo formato vale pro arquivo de dado no histórico (1.8), trocando o
+GitHub ('Removing sensitive data from a repository'), com backup. Diga ok pra eu seguir com a
+recomendação, ou me diz o que prefere." O mesmo formato vale pro arquivo de dado no histórico (1.8), trocando o
 risco pela LGPD.
 
 **Referência do 1.7:** só criar ou atualizar com 1.1 limpo e ok da pessoa; nunca por cima de um
 alerta que ela não reconheceu.
 
-## Passo 2: camada de contas (só a pessoa confirma)
+## Passo 2: resolver item por item
+
+Uma frase de resumo ("Terminei. Encontrei 3 pontos de atenção e 5 itens em ordem; vamos pelos que
+importam."), a tabela, e **um item de cada vez**, do mais grave pro menos: segredo em código ou
+histórico, credencial ou dado de cliente no git, acesso aberto ao app ou à planilha, sem proteção
+de commit, `.gitignore`, integridade, dependência. Em cada item: o que é, por que importa, a
+recomendação, e o ok só se alterar o projeto. Resolvido, "feito" e o próximo.
+
+| Item | Estado | Evidência ou pergunta |
+| --- | --- | --- |
+| 1.1 Segredo no estado atual | Verificado e correto | script: nenhum padrão de segredo nos arquivos rastreados |
+| 1.4 `.gitignore` | Verificado e com problema | `.env` descoberto; corrigido com ok: linha `.env` adicionada |
+| 1.7 Integridade | Verificado e correto | 4 linhas iguais à referência; fonte: versão publicada (origin/main) |
+| 2.2 Duas etapas | Fora do alcance do agente | pendente: conferir na área de segurança de cada conta |
+
+Primeira execução e "relatório completo": tabela inteira. Rodadas seguintes: só achado real. Sem
+achado: uma linha ("nenhum achado nos N itens de código; M pendências de conta seguem abertas").
+
+## Passo 3: contas (só a pessoa confirma)
 
 Uma pergunta por vez, no formato da regra 3, com o que assumo se não souber ("anoto como pendente
 com o caminho pra conferir"). Registrar a resposta como estado; "não sei" = fora do alcance,
@@ -278,25 +292,9 @@ pendente. Ao terminar, gravar a data em `ultima_revisao_de_contas`.
 - "O disco do computador está criptografado? Windows: Configurações > Privacidade e segurança >
   Criptografia do dispositivo. Mac: FileVault."
 
-## Passo 3: relatório e encerramento
+## Passo 4: encerramento
 
-Uma frase de resumo ("Terminei. Encontrei 3 pontos de atenção e 5 itens em ordem; vamos pelos que
-importam."), a tabela, e **um item de cada vez**, do mais grave pro menos: segredo em código ou
-histórico, credencial ou dado de cliente no git, acesso aberto ao app ou à planilha, sem proteção
-de commit, `.gitignore`, integridade, dependência. Em cada item: o que é, por que importa, a
-recomendação, e o ok só se alterar o projeto. Resolvido, "feito" e o próximo.
-
-| Item | Estado | Evidência ou pergunta |
-| --- | --- | --- |
-| 1.1 Segredo no estado atual | Verificado e correto | script: nenhum padrão de segredo nos arquivos rastreados |
-| 1.4 `.gitignore` | Verificado e com problema | `.env` descoberto; corrigido com ok: linha `.env` adicionada |
-| 1.7 Integridade | Verificado e correto | 4 linhas iguais à referência; fonte: versão publicada (origin/main) |
-| 2.2 Duas etapas | Fora do alcance do agente | pendente: conferir na área de segurança de cada conta |
-
-Primeira execução e "relatório completo": tabela inteira. Rodadas seguintes: só achado real. Sem
-achado: uma linha ("nenhum achado nos N itens de código; M pendências de conta seguem abertas").
-
-**Encerramento obrigatório:** (1) o que foi feito, em lista curta; (2) o que depende só da pessoa,
+Obrigatório, depois do Passo 3. Gravar `ultima_verificacao` com a data do dia. Conteúdo: (1) o que foi feito, em lista curta; (2) o que depende só da pessoa,
 do mais importante pro menos, cada item com como conferir e por que importa; (3) quando rodar de
 novo (mudança no código publicado, senha ou chave nova, integração nova, ou 90 dias pra contas);
 (4) uma frase do estado real, sem inflar nem assustar: "Hoje o projeto está protegido contra X e
