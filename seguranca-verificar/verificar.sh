@@ -13,6 +13,7 @@
 #   bash verificar.sh --acesso app.py --baseline-criar      # primeira vez
 #   bash verificar.sh --acesso app.py --baseline-atualizar  # só depois de mudança confirmada
 #   bash verificar.sh --pasta "C:/caminho/outra pasta"      # outra pasta do projeto
+#   bash verificar.sh --instalar-protecao-commit            # so com autorizacao da pessoa (item 1.6)
 #
 # Saída: uma linha por item, no formato  ITEM|ESTADO|EVIDÊNCIA
 # Estados: CORRETO, PROBLEMA, ERRO (comando falhou, não é "correto"), NAO_SE_APLICA, INFO
@@ -22,6 +23,7 @@ MODO=verificar; ACESSO=""; BASE_ACAO=""; PASTA="."
 while [ $# -gt 0 ]; do
   case "$1" in
     --inspecionar) MODO=inspecionar ;;
+    --instalar-protecao-commit) MODO=protecao ;;
     --acesso) ACESSO="${2:-}"; shift ;;
     --baseline-criar) BASE_ACAO=criar ;;
     --baseline-atualizar) BASE_ACAO=atualizar ;;
@@ -51,6 +53,36 @@ hash_linhas() { # lê linhas na entrada, imprime um hash curto por linha (nunca 
 }
 
 if git rev-parse --show-toplevel >/dev/null 2>&1; then REPO=1; RAIZ=$(git rev-parse --show-toplevel); else REPO=0; RAIZ=$(pwd); fi
+
+# ---------------------------------------------------------------- proteção mínima de commit (item 1.6)
+# Escreve um hook pre-commit pequeno que bloqueia commit com padrão de segredo ou arquivo de
+# credencial. Só roda quando a pessoa autorizou. Não sobrescreve hook de outra origem.
+if [ "$MODO" = protecao ]; then
+  [ "$REPO" = 1 ] || { out "protecao_de_commit" "NAO_SE_APLICA" "pasta sem git"; exit 0; }
+  HK="$(git rev-parse --git-path hooks)/pre-commit"
+  if [ -f "$HK" ] && ! grep -q 'seguranca-verificar' "$HK"; then
+    out "protecao_de_commit" "INFO" "ja existe um hook pre-commit de outra origem em $HK; nao foi alterado. Conferir se ele varre segredo"
+    exit 0
+  fi
+  mkdir -p "$(dirname "$HK")"
+  {
+    echo '#!/bin/sh'
+    echo '# Protecao minima de commit instalada pela skill seguranca-verificar (modelosdeskills).'
+    echo '# Bloqueia commit que adicione padrao de senha/chave ou arquivo de credencial. Remover este arquivo desliga a protecao.'
+    # os padroes tem aspas simples dentro; escapar pra caber entre aspas simples no hook
+    printf "P='%s'\n" "$(printf '%s' "$P" | sed "s/'/'\\\\''/g")"
+    printf "PH='%s'\n" "$(printf '%s' "$PH" | sed "s/'/'\\\\''/g")"
+    printf "F='%s'\n" "$(printf '%s' "$F" | sed "s/'/'\\\\''/g")"
+    echo 'if git diff --cached -U0 | grep -E "^\+[^+]" | grep -EI -e "$P" | grep -qviE "$PH"; then'
+    echo '  echo "BLOQUEADO pela protecao de commit: ha padrao de senha ou chave no que vai ser salvo. Tire o segredo do arquivo (lugar certo: .env ou o painel de secrets da plataforma) e tente de novo."; exit 1; fi'
+    echo 'if git diff --cached --name-only | grep -iE "$F" | grep -qviE "exemplo|example|sample"; then'
+    echo '  echo "BLOQUEADO pela protecao de commit: arquivo de credencial (.env, secrets, chave) nao pode ir pro git. Adicione ao .gitignore."; exit 1; fi'
+    echo 'exit 0'
+  } > "$HK"
+  chmod +x "$HK" 2>/dev/null
+  out "protecao_de_commit" "CORRETO" "hook pre-commit instalado em $HK (bloqueia segredo e arquivo de credencial em todo commit, inclusive feito fora do Claude Code)"
+  exit 0
+fi
 
 # ---------------------------------------------------------------- inspeção (Passo 0)
 if [ "$MODO" = inspecionar ]; then

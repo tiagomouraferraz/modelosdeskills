@@ -38,12 +38,16 @@ alcance do agente. Nunca "está tudo OK". Comando que falha vira "erro", não "c
 
 ## O que ela não faz
 
-- Não altera nenhum arquivo do seu projeto, exceto os dois dela dentro de `.claude/` e, com sua
-  confirmação na tela, linhas no `.gitignore`.
+- Não altera nenhum arquivo do seu projeto sem sua confirmação na tela. As únicas alterações que
+  ela propõe: os dois arquivos dela dentro de `.claude/`, linhas no `.gitignore`, tirar um arquivo
+  de dado do versionamento (ele continua na sua pasta) e uma proteção mínima de commit (um arquivo
+  na pasta do git, removível a qualquer momento).
 - Não mostra o valor de senha ou chave, nem copia pra lugar nenhum.
 - Não reescreve histórico do git, não faz push, não troca credencial por você.
-- Não instala nada, não executa o código do projeto, não acessa a internet além do `git fetch` do
-  seu próprio repositório (sem pedir senha).
+- Não executa o código do projeto. Na internet, só faz o `git fetch` do seu próprio repositório
+  (sem pedir senha) e, quando não conhece a plataforma que você usa, consulta a documentação
+  oficial dela pra não te perguntar o que dá pra descobrir.
+- Não depende de nenhuma outra skill: funciona instalada sozinha.
 - Não garante proteção contra golpe direcionado, falha da plataforma ou invasão da sua conta por
   fora do projeto. Detector de segredo funciona por formato conhecido: senha simples em variável
   de nome inocente passa.
