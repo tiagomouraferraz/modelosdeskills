@@ -47,7 +47,11 @@ Uso por sua conta e risco. Os efeitos diretos e indiretos de instalar e executar
 
 ## Skills
 
-Em construção. As skills entram uma por vez, cada uma com o próprio zip na aba Releases e um README próprio dentro da pasta.
+As skills entram uma por vez, cada uma com o próprio zip na aba **Releases** e um README próprio dentro da pasta.
+
+| Skill | O que faz | Pasta |
+| --- | --- | --- |
+| `/seguranca-verificar` | Verificação de segurança do projeto: segredo em código ou no histórico, credencial fora do `.gitignore`, proteção de commit, integridade do arquivo de login, e as perguntas que só você responde. Cada item em um de três estados, nunca "está tudo OK". | [seguranca-verificar](seguranca-verificar/) |
 
 ## Licença
 
