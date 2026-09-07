@@ -7,7 +7,7 @@ Skill de verificação de segurança pra projeto feito com assistente de IA por 
 1. Baixe o zip na aba Releases do repositório.
 2. Descompacte dentro de `~/.claude/skills/` (Windows: `C:\Users\SEU-USUARIO\.claude\skills\`).
    A pasta `seguranca-verificar` já vem com o nome certo. Se a pasta `skills` não existir, crie com esse nome. No Windows, ao usar "Extrair tudo", apague o final do caminho de destino (o nome do zip, que o Windows acrescenta sozinho) pra não ficar `seguranca-verificar` dentro de outra `seguranca-verificar`. O resultado certo é `skills` > `seguranca-verificar` > `SKILL.md`.
-3. Abra o assistente na pasta do seu projeto e chame `/seguranca-verificar` (no Claude Code) ou peça "use a skill seguranca-verificar". Em outra ferramenta: Codex lê a mesma pasta em `.agents/skills/` do projeto; ferramenta sem suporte a skill usa o conteúdo do `SKILL.md` como regra do projeto, com `verificar.sh` na mesma pasta. Na primeira vez ela
+3. Abra o assistente na pasta do seu projeto e chame `/seguranca-verificar` (no Claude Code) ou peça "use a skill seguranca-verificar". Em outra ferramenta: Codex lê a mesma pasta em `.agents/skills/` do projeto; ferramenta sem suporte a skill usa o conteúdo do `SKILL.md` como regra do projeto, com `textos.md`, `bases.md` e `verificar.sh` na mesma pasta. Na primeira vez ela
    se apresenta, confirma a pasta, pede uma autorização pra olhar o projeto, descobre sozinha o que
    der (onde o app está publicado, onde as senhas moram, qual arquivo controla o login, quais contas
    sustentam o projeto) e só pergunta o que não dá pra ver por ali, explicando por que pergunta e
@@ -38,12 +38,18 @@ alcance do agente. Nunca "está tudo OK". Comando que falha vira "erro", não "c
 
 ## O que ela não faz
 
-- Não altera nenhum arquivo do seu projeto sem sua confirmação na tela. As únicas alterações que
-  ela propõe: os dois arquivos dela dentro de `.seguranca-verificar/` na raiz do projeto, linhas no `.gitignore`, tirar um arquivo
-  de dado do versionamento (ele continua na sua pasta) e uma proteção mínima de commit (um arquivo
-  na pasta do git, removível a qualquer momento).
+- Não altera nenhum arquivo do seu projeto sem sua confirmação na tela, e cada alteração é
+  proposta uma a uma, com o motivo. As que ela pode propor: os dois arquivos dela dentro de
+  `.seguranca-verificar/` na raiz do projeto; linhas no `.gitignore`; tirar um arquivo de
+  credencial ou de dado do versionamento (ele continua na sua pasta); tirar uma chave de dentro
+  de um arquivo e fazer o código ler do cofre da plataforma; uma proteção mínima de commit (um
+  arquivo na pasta do git, removível a qualquer momento); a lista de aprovação manual do
+  assistente; mover o `.env` e arquivos de dado pra fora de pasta sincronizada na nuvem; uma
+  linha de lembrete no arquivo de instruções do projeto; e um commit local no fim.
 - Não mostra o valor de senha ou chave, nem copia pra lugar nenhum.
-- Não reescreve histórico do git, não faz push, não troca credencial por você.
+- Não faz push e não troca credencial por você. Só reescreve histórico do git num caso, com sua
+  confirmação: repositório que nunca foi enviado pra lugar nenhum, com cópia de segurança antes e
+  depois da troca da credencial exposta.
 - Não executa o código do projeto. Na internet, só faz o `git fetch` do seu próprio repositório
   (sem pedir senha) e, quando não conhece a plataforma que você usa, consulta a documentação
   oficial dela pra não te perguntar o que dá pra descobrir.
@@ -67,6 +73,7 @@ verificação o assistente sugere rodar a nativa também.
 ## Arquivos
 
 - `SKILL.md`: a instrução que o assistente segue (formato aberto Agent Skills, com uma tabela de portabilidade pra outras ferramentas).
+- `textos.md`: o que o assistente diz à pessoa em cada momento (abertura, cada item, perguntas de conta, encerramento), separado das regras pra o `SKILL.md` ficar curto.
 - `bases.md`: a fonte de cada checagem (OWASP, NIST, CIS, GitHub, LGPD).
 - `verificar.sh`: o script de leitura. Roda no Git Bash (que o Claude Code usa no Windows) e em
   qualquer shell de Mac ou Linux. Pode ser lido inteiro antes de usar; não tem nada escondido.
