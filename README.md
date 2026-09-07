@@ -1,6 +1,6 @@
 # Tiago Moura - modelosdeskills
 
-Skills de sistema pra Claude Code criadas por um Gestor de Tráfego Pago desde 2015 que não programa, pra operação própria.
+Skills de sistema pra Claude Code criadas por um Gestor de Tráfego Pago desde 2015, pra operação própria.
 
 ## Como instalar
 
@@ -18,7 +18,7 @@ As skills entram uma por vez, cada uma com o próprio zip na aba **Releases** e 
 
 | Skill | O que faz | Pasta |
 | --- | --- | --- |
-| `/seguranca-verificar` | Verificação de segurança do projeto: segredo em código ou no histórico, credencial fora do `.gitignore`, proteção de commit, integridade do arquivo de login, e as perguntas que só você responde. Cada item em um de três estados, nunca "está tudo OK". | [seguranca-verificar](seguranca-verificar/) |
+| `/seguranca-verificar` | Assistente de segurança que varre o seu projeto (código, histórico do git, arquivos de credencial e de dado, arquivo de login, modo de permissão do próprio assistente), explica cada achado em linguagem simples e aplica a correção com um "ok", seguindo práticas documentadas por OWASP, NIST, CIS Controls, GitHub e LGPD. Depois pergunta o que só você responde (duas etapas, quem abre o app, planilha compartilhada). Cada item termina em um de três estados, nunca em "está tudo OK". | [seguranca-verificar](seguranca-verificar/) |
 
 ## O que é isto
 
