@@ -77,8 +77,12 @@ Criada em setembro de 2026 pra operação de um gestor de tráfego pago, com um 
 publicado e credenciais em `.env` e no painel de Secrets da hospedagem. Testada em Windows 11 com
 Claude Code pelo VS Code, num projeto de teste com erros colocados de propósito (segredo em código
 e no histórico, `.gitignore` vazio, dependência sem versão, arquivo de acesso adulterado, pasta sem
-git). Não testada em Mac ou Linux, embora os comandos sejam padrão de shell. Passou por uma rodada
-de crítica independente e por várias rodadas de teste humano (a pessoa rodando a skill como
-usuária, do início ao fim, com cada achado virando correção) antes desta versão.
+git). Não testada em Mac ou Linux, embora os comandos sejam padrão de shell; precisa de `bash`
+(no Windows, vem com o Git for Windows). Passou por várias rodadas de teste humano (a pessoa
+rodando a skill como usuária, do início ao fim, com cada achado virando correção) e por sete
+rodadas de validação sintética (dois cenários fictícios, um deles simulando o Cursor; comparação
+cega entre versões e crítica independente por um agente na persona de consultor de segurança),
+com mais de 40 correções aplicadas a partir delas. A simulação do Cursor é isso, simulação: a
+skill não foi rodada de verdade fora do Claude Code.
 
 Adapte à sua realidade. Uso por sua conta e risco (ver README principal do repositório).

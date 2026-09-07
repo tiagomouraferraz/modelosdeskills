@@ -38,7 +38,7 @@ TMP=$(mktemp -d 2>/dev/null || mktemp -d -t sv); trap 'rm -rf "$TMP"' EXIT
 export GIT_TERMINAL_PROMPT=0
 
 # Padrões de segredo (formatos conhecidos + atribuição genérica). Ajuste se souber de outro formato.
-P='-----BEGIN [A-Z ]*PRIVATE KEY-----|AKIA[0-9A-Z]{16}|ghp_[A-Za-z0-9]{36}|github_pat_[A-Za-z0-9_]{60,}|AIza[0-9A-Za-z_-]{35}|GOCSPX-[A-Za-z0-9_-]{20,}|sk-[A-Za-z0-9_-]{20,}|[sr]k_live_[A-Za-z0-9]{20,}|EAA[A-Za-z0-9]{40,}|xox[baprs]-[A-Za-z0-9-]{10,}|eyJ[A-Za-z0-9_-]{20,}\.eyJ[A-Za-z0-9_-]{20,}|(postgres|postgresql|mysql|mongodb(\+srv)?|redis)://[^:/[:space:]]+:[^@[:space:]]+@|(senha|password|passwd|secret|token|api_key|apikey)[[:space:]]*[:=][[:space:]]*["'"'"'][^"'"'"']{8,}'
+P='-----BEGIN [A-Z ]*PRIVATE KEY-----|AKIA[0-9A-Z]{16}|ghp_[A-Za-z0-9]{36}|github_pat_[A-Za-z0-9_]{60,}|AIza[0-9A-Za-z_-]{35}|GOCSPX-[A-Za-z0-9_-]{20,}|sk-[A-Za-z0-9_-]{20,}|[sr]k_live_[A-Za-z0-9]{20,}|sb_(secret|publishable)_[A-Za-z0-9_-]{20,}|EAA[A-Za-z0-9]{40,}|xox[baprs]-[A-Za-z0-9-]{10,}|eyJ[A-Za-z0-9_-]{20,}\.eyJ[A-Za-z0-9_-]{20,}|(postgres|postgresql|mysql|mongodb(\+srv)?|redis)://[^:/[:space:]]+:[^@[:space:]]+@|(senha|password|passwd|secret|token|api_key|apikey)[[:space:]]*[:=][[:space:]]*["'"'"'][^"'"'"']{8,}'
 # Placeholder: linha que contém um destes é exemplo, não segredo.
 PH='exemplo|example|placeholder|troque|substitua|your_|seu_|sua_|xxx+|<[A-Za-z_ -]+>'
 # Arquivos que nunca deveriam estar rastreados no git.
@@ -86,10 +86,10 @@ fi
 
 # ---------------------------------------------------------------- inspeção (Passo 0)
 if [ "$MODO" = inspecionar ]; then
-  out "pasta" "INFO" "$RAIZ"
+  out "pasta" "INFO" "$(pwd)"
   if [ "$REPO" = 1 ]; then
     rem=$(git remote get-url origin 2>/dev/null | sed -E 's#//[^/@]+@#//<credencial-oculta>@#')
-    out "repositorio_git" "INFO" "sim; remoto: ${rem:-nenhum}"
+    if [ "$(cd "$RAIZ" && pwd)" != "$(pwd)" ]; then out "repositorio_git" "INFO" "sim, mas esta pasta e subpasta de um repositorio maior ($RAIZ); remoto: ${rem:-nenhum}"; else out "repositorio_git" "INFO" "sim; remoto: ${rem:-nenhum}"; fi
   else
     out "repositorio_git" "INFO" "nao (pasta sem git)"
   fi
@@ -100,9 +100,12 @@ if [ "$MODO" = inspecionar ]; then
   out "arquivo_de_dependencias" "INFO" "${dep:-nenhum}"
   pub=$(ls vercel.json netlify.toml Procfile Dockerfile app.yaml streamlit_app.py 2>/dev/null | tr '\n' ' ')
   [ -d .streamlit ] && pub="$pub .streamlit/"
+  # .vercel/ e .netlify/ = publicacao feita direto desta pasta por linha de comando (sem precisar de git)
+  [ -d .vercel ] && pub="$pub .vercel/(publica-desta-pasta)"
+  [ -d .netlify ] && pub="$pub .netlify/(publica-desta-pasta)"
   out "sinais_de_app_publicado" "INFO" "${pub:-nenhum}"
   if [ "$REPO" = 1 ]; then
-    cand=$(git grep -ilE 'st\.login|st\.user|login|auth|session|admin|permiss' 2>/dev/null | head -5 | tr '\n' ' ')
+    cand=$(git grep -ilE 'st\.login|st\.user|login|auth|session|admin|permiss' -- . 2>/dev/null | head -5 | tr '\n' ' ')
   else
     cand=$(grep -rilE --exclude-dir=.git --exclude-dir=node_modules 'st\.login|st\.user|login|auth|session|admin|permiss' . 2>/dev/null | head -5 | tr '\n' ' ')
   fi
@@ -120,41 +123,60 @@ if [ "$MODO" = inspecionar ]; then
   [ -f netlify.toml ] && serv="$serv Netlify"
   git remote get-url origin 2>/dev/null | grep -q github.com && serv="$serv GitHub"
   out "servicos_detectados_no_codigo" "INFO" "${serv:-nenhum reconhecido}"
+  # pasta dentro de sincronização de nuvem: tudo aqui já vai pra nuvem, inclusive .env e cópias
+  case "$(pwd)" in
+    *OneDrive*|*"Google Drive"*|*GoogleDrive*|*Dropbox*|*iCloud*) out "pasta_sincronizada_na_nuvem" "INFO" "sim (o caminho passa por um servico de sincronizacao)";;
+    *) out "pasta_sincronizada_na_nuvem" "INFO" "nao pelo caminho";;
+  esac
   exit 0
 fi
 
 # ---------------------------------------------------------------- verificação (Passo 1)
-cd "$RAIZ" || exit 2
+# A verificação roda na pasta em que foi chamada. Se ela for uma subpasta de um repositório
+# maior, os comandos do git ficam restritos a ela (pathspec "-- ."), e isso é avisado.
+AQUI=$(pwd)
+if [ "$REPO" = 1 ] && [ "$(cd "$RAIZ" && pwd)" != "$AQUI" ]; then
+  out "pasta" "INFO" "esta pasta faz parte de um repositorio maior ($RAIZ); verificando so o que esta dentro dela"
+fi
 
 # 1.1 segredo no estado atual
 if [ "$REPO" = 1 ]; then
-  git ls-files -z | xargs -0 grep -nHEI -e "$P" > "$TMP/11" 2> "$TMP/11e"
+  git ls-files -z -- . | xargs -0 grep -nHEI -e "$P" > "$TMP/11" 2> "$TMP/11e"
 else
-  grep -rnHEI --exclude-dir=.git --exclude-dir=node_modules -e "$P" . > "$TMP/11" 2> "$TMP/11e"
+  # sem git: todos os arquivos da pasta, menos os de credencial (.env e afins), que sao o lugar certo de um segredo
+  grep -rnHEI --exclude-dir=.git --exclude-dir=node_modules -e "$P" . 2> "$TMP/11e" | grep -vE "^[^:]*/?($(printf '%s' "$F" | sed 's/^(^|\/)//; s/\$$//'))" > "$TMP/11"
 fi
 grep -viE "$PH" "$TMP/11" | cut -d: -f1,2 > "$TMP/11f"
+# com git: arquivo da pasta que nao esta no git (e nao esta ignorado) tambem vai junto em copia ou nuvem; linha propria
+NAO_RASTREADO=""
+if [ "$REPO" = 1 ]; then
+  git ls-files -z --others --exclude-standard -- . | xargs -0 grep -nHEI -e "$P" 2>/dev/null | grep -vE "^[^:]*/?($(printf '%s' "$F" | sed 's/^(^|\/)//; s/\$$//'))" | grep -viE "$PH" | cut -d: -f1,2 > "$TMP/11n"
+  [ -s "$TMP/11n" ] && NAO_RASTREADO=$(tr '\n' ' ' < "$TMP/11n")
+fi
 LIMPO11=0
 if [ -s "$TMP/11e" ] && ! [ -s "$TMP/11" ]; then
   out "1.1 segredo no estado atual" "ERRO" "grep falhou: $(head -1 "$TMP/11e")"
 elif [ -s "$TMP/11f" ]; then
   out "1.1 segredo no estado atual" "PROBLEMA" "padrao de segredo em: $(tr '\n' ' ' < "$TMP/11f")(arquivo:linha; trocar a credencial antes de qualquer outra coisa)"
 else
-  LIMPO11=1; out "1.1 segredo no estado atual" "CORRETO" "nenhum padrao de segredo nos arquivos rastreados"
+  if [ "$REPO" = 1 ]; then ONDE11="nos arquivos rastreados"; else ONDE11="nos arquivos da pasta (fora os de credencial)"; fi
+  LIMPO11=1; out "1.1 segredo no estado atual" "CORRETO" "nenhum padrao de segredo $ONDE11"
 fi
+[ -n "$NAO_RASTREADO" ] && out "1.1 segredo em arquivo fora do git" "PROBLEMA" "padrao de segredo em: $NAO_RASTREADO(arquivo:linha; nao esta no git, mas esta na pasta e vai junto em copia ou nuvem; trocar a credencial e tirar do arquivo)"
 
 if [ "$REPO" = 1 ]; then
   # 1.2 segredo no histórico
-  git log --all -p > "$TMP/hist" 2>/dev/null
+  git log --all -p -- . > "$TMP/hist" 2>/dev/null
   n=$(grep -EI -e "$P" "$TMP/hist" | grep -vciE "$PH")
   if [ "${n:-0}" -gt 0 ]; then
-    cm=$(git log --all --format='%h %ad' --date=short -E -G"$P" 2>/dev/null | head -5 | tr '\n' ';')
+    cm=$(git log --all --format='%h %ad' --date=short -E -G"$P" -- . 2>/dev/null | head -5 | tr '\n' ';')
     out "1.2 segredo no historico do git" "PROBLEMA" "$n linha(s) com padrao de segredo no historico; commits: ${cm:-?}. Trocar a credencial primeiro; limpar historico e decisao separada, fora desta skill"
   else
     out "1.2 segredo no historico do git" "CORRETO" "nenhum padrao de segredo no historico"
   fi
 
   # 1.3 arquivo de credencial rastreado
-  t=$(git ls-files | grep -iE "$F" | grep -viE 'exemplo|example|sample' | tr '\n' ' ')
+  t=$(git ls-files -- . | grep -iE "$F" | grep -viE 'exemplo|example|sample' | tr '\n' ' ')
   if [ -n "$t" ]; then out "1.3 arquivo de credencial rastreado" "PROBLEMA" "rastreado no git: $t"; else out "1.3 arquivo de credencial rastreado" "CORRETO" "nenhum"; fi
 
   # 1.4 .gitignore cobre credencial
@@ -182,7 +204,7 @@ if [ "$REPO" = 1 ]; then
   if [ -f "$hk" ]; then
     if grep -qiE 'segredo|secret|gitleaks|detect-secrets' "$hk"; then out "1.6 protecao de commit" "CORRETO" "hook pre-commit presente e parece varrer segredo"; else out "1.6 protecao de commit" "INFO" "hook pre-commit existe, mas nao parece varrer segredo (conteudo nao verificado)"; fi
   else
-    out "1.6 protecao de commit" "PROBLEMA" "sem hook pre-commit: nada impede commit de segredo. Instalar a skill seguranca-instalarbarreiras deste repositorio ou um verificador de segredo (ex: gitleaks)"
+    out "1.6 protecao de commit" "PROBLEMA" "sem hook pre-commit: nada impede commit de segredo. Este script instala uma protecao minima com --instalar-protecao-commit (so com autorizacao da pessoa)"
   fi
 else
   out "1.6 protecao de commit" "NAO_SE_APLICA" "pasta sem git"
@@ -237,16 +259,22 @@ else
   out "1.7 integridade do arquivo de acesso" "NAO_SE_APLICA" "sem arquivo de acesso configurado"
 fi
 
-# 1.8 arquivo de dado rastreado (revisar)
+# 1.8 arquivo de dado (revisar): rastreado no git ou, sem git, presente na pasta
 if [ "$REPO" = 1 ]; then
-  dd=$(git ls-files | grep -iE '\.(csv|xlsx|xls|pdf)$' | head -20 | tr '\n' ' ')
+  dd=$(git ls-files -- . | grep -iE '\.(csv|xlsx|xls|pdf)$' | head -20 | tr '\n' ' ')
   if [ -n "$dd" ]; then out "1.8 arquivo de dado rastreado" "INFO" "revisar se contem dado de cliente: $dd"; else out "1.8 arquivo de dado rastreado" "CORRETO" "nenhum csv/xlsx/pdf rastreado"; fi
+else
+  dd=$(find . -path ./node_modules -prune -o -type f \( -iname '*.csv' -o -iname '*.xlsx' -o -iname '*.xls' -o -iname '*.pdf' \) -print 2>/dev/null | head -20 | tr '\n' ' ')
+  if [ -n "$dd" ]; then out "1.8 arquivo de dado na pasta" "INFO" "sem git aqui, mas revisar se contem dado de cliente e se a pasta e sincronizada ou publicada: $dd"; else out "1.8 arquivo de dado na pasta" "CORRETO" "nenhum csv/xlsx/pdf na pasta"; fi
 fi
 
 # 1.9 variável pública de frontend com nome sensível
+FV='(NEXT_PUBLIC|VITE|REACT_APP)_[A-Z_]*(SECRET|SERVICE|PRIVATE|TOKEN)'
 if [ "$REPO" = 1 ]; then
-  fv=$(git grep -nE '(NEXT_PUBLIC|VITE|REACT_APP)_[A-Z_]*(SECRET|SERVICE|PRIVATE|TOKEN)' 2>/dev/null | cut -d: -f1,2 | head -5 | tr '\n' ' ')
-  if [ -n "$fv" ]; then out "1.9 variavel publica de frontend com nome sensivel" "PROBLEMA" "vai pro navegador de qualquer visitante: $fv"; else out "1.9 variavel publica de frontend com nome sensivel" "CORRETO" "nenhuma"; fi
+  fv=$(git grep -nE "$FV" -- . 2>/dev/null | cut -d: -f1,2 | head -5 | tr '\n' ' ')
+else
+  fv=$(grep -rnE --exclude-dir=.git --exclude-dir=node_modules "$FV" . 2>/dev/null | cut -d: -f1,2 | head -5 | tr '\n' ' ')
 fi
+if [ -n "$fv" ]; then out "1.9 variavel publica de frontend com nome sensivel" "PROBLEMA" "vai pro navegador de qualquer visitante: $fv"; else out "1.9 variavel publica de frontend com nome sensivel" "CORRETO" "nenhuma"; fi
 
-out "FIM" "INFO" "verificacao concluida em $RAIZ"
+out "FIM" "INFO" "verificacao concluida em $AQUI"
