@@ -178,6 +178,7 @@ Se `.seguranca-verificar/config.md` existir: texto de segunda execução e Passo
    conectores: <lista real | nenhum pelos arquivos | pendente>
    outras_pastas: nenhuma encontrada (<onde, níveis>) | <caminhos> | pendente: localizar
    remoto: nenhum | <endereço sem credencial>
+   historico: n/a | limpo | mantido por decisão da pessoa em <data> (<o que ficou nele>) | recomeçado em <data>
    ultima_revisao_de_contas: nunca
    ultima_verificacao: AAAA-MM-DD
    repeticao_30_dias: não
@@ -207,7 +208,7 @@ arquivo de acesso; `--pasta "<caminho>"` pra cada `outras_pastas`. Saída: `ITEM
 
 | Item | O que confere | Com problema, o assistente |
 | --- | --- | --- |
-| 1.1 | Senha ou chave em arquivo rastreado; com git, arquivo da pasta fora do git sai em linha própria com o mesmo tratamento; sem git, qualquer arquivo que não seja de credencial (`.env` e afins são o lugar certo) | avisa arquivo e linha, nunca o valor; pergunta de qual serviço é a chave (o nome da variável é só pista); ordem fixa **(1) a pessoa troca → (2) tirar do arquivo → (3) histórico**; 2 e 3 só depois de "troquei", ou com a pessoa aceitando que o app para até a chave nova estar no cofre. Textos em `textos.md` |
+| 1.1 | Senha ou chave em arquivo rastreado; com git, arquivo da pasta fora do git sai em linha própria com o mesmo tratamento; sem git, qualquer arquivo que não seja de credencial (`.env` e afins são o lugar certo) | avisa arquivo e linha, nunca o valor; pergunta de qual serviço é a chave (o nome da variável é só pista); ordem fixa **(1) a pessoa troca → (2) tirar do arquivo → (3) histórico**; 2 e 3 só depois de "troquei", ou com a pessoa aceitando que o app para até a chave nova estar no cofre (nesse caso, gravar na configuração "tirada do código antes da troca, com aceite da pessoa em <data>" e manter a troca como URGENTE no topo). Textos em `textos.md` |
 | 1.2 | O mesmo, no histórico do git | depois da troca, decisão sobre o histórico (abaixo) |
 | 1.3 | Arquivo de credencial rastreado (`.env`, `secrets.toml`, `credentials.json`, `token.json`, `.pem`) | tirar do versionamento (`git rm --cached`) e proteger no `.gitignore` |
 | 1.4 | `.gitignore` cobrindo esses arquivos | acrescentar as linhas |
@@ -216,7 +217,7 @@ arquivo de acesso; `--pasta "<caminho>"` pra cada `outras_pastas`. Saída: `ITEM
 | 1.7 | Integridade do arquivo de acesso contra a referência em hash, pela versão publicada ou, sem remoto, a cópia local, dizendo qual | mudança não reconhecida: investigar `git log -p` antes de tudo; reconhecida: `--baseline-atualizar`. Com 1.1 sujo: "aguardando 1.1" |
 | 1.8 | Arquivo de dado (csv, xlsx, pdf) rastreado (com git) ou presente (sem git) | com git: tirar do versionamento e proteger pelo nome, mesmo se "fictício"; recomendar guardar fora da pasta ou apagar; histórico como em 1.2; decisão sobre `*.csv`/`*.xlsx` (a proteção de commit não barra dado). Sem git: informa que vai junto em cópia ou sincronização e recomenda guardar fora (ação da pessoa) |
 | 1.9 | Variável pública de frontend com nome sensível | duas mensagens (`textos.md`): primeiro só a mudança de código (gravação no servidor), depois a troca da chave |
-| 1.10 | Modo de permissão do próprio assistente e conectores | no Claude Code a fonte é o que a sessão informa (`settings.json` só confirma `defaultMode`; Bypass ligado na sessão não deixa rastro); sem fonte, perguntar o que o rodapé mostra e gravar "segundo você". Só o modo sem confirmação é problema; Auto e padrão são corretos, uma linha, sem escolha. Conectores sempre da lista real (na sessão, ou nos arquivos de MCP da Portabilidade); sem conseguir ler, perguntar, nunca omitir |
+| 1.10 | Modo de permissão do próprio assistente e conectores | no Claude Code a fonte é o que a sessão informa (`settings.json` só confirma `defaultMode`; Bypass ligado na sessão não deixa rastro); sem fonte, perguntar o que o rodapé mostra e gravar "segundo você". Só o modo sem confirmação é problema; Auto e padrão são corretos, uma linha, sem escolha. Conectores sempre da lista real (na sessão, ou nos arquivos de MCP da Portabilidade); sem conseguir ler, perguntar, nunca omitir. O padrão gravado na lista de aprovação é o prefixo real das ferramentas que a sessão mostra (`mcp__<servidor>__*`, copiado), nunca deduzido do nome de exibição; depois de gravar, reler o arquivo e listar os prefixos na evidência do "feito" |
 
 **Trocar uma credencial = gerar a nova, colocar no cofre, revogar a antiga.** Gerar sozinho não
 invalida a exposta. Revogar derruba na hora qualquer cópia publicada com a chave antiga: é o
@@ -285,7 +286,11 @@ Obrigatório depois do Passo 3. Gravar `ultima_verificacao`. Em tópicos:
    no arquivo de instruções e `repeticao_30_dias: sim`. Automação sem a pessoa presente: explicar
    o trade-off da regra 9 e recomendar contra.
 6. **Complemento nativo**, só no Claude Code e só com código-fonte no projeto: uma linha sobre
-   `/security-review` (`textos.md`). Em outra ferramenta, pular.
+   `/security-review` (`textos.md`). Em outra ferramenta, pular. Se a nativa não puder rodar
+   (ex: sem remoto ou sem diferença de branch), dizer isso e oferecer só uma leitura do arquivo
+   de acesso, com cada achado virando recomendação; correção de código fora das exceções de
+   "Segurança do próprio processo" só com ok, tratada como mudança maior, e a referência do 1.7
+   atualizada depois, com ok.
 7. **Estrela**, só na primeira conclusão (`pedido_de_estrela_feito: não`) **e só se a skill foi
    útil de fato**: uma correção executada com "feito", ou feita pela pessoa por orientação daqui
    ("troquei"). Tudo pendente, ou o item mais grave "urgente, adiado", não pede (condição
