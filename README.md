@@ -18,7 +18,7 @@ As skills entram uma por vez, cada uma com o próprio zip na aba **Releases** e 
 
 | Skill | O que faz | Pasta |
 | --- | --- | --- |
-| `/seguranca-verificar` | Assistente de segurança que varre o seu projeto (código, histórico do git, arquivos de credencial e de dado, arquivo de login, modo de permissão do próprio assistente), explica cada achado em linguagem simples e aplica a correção com um "ok", seguindo práticas documentadas por OWASP, NIST, CIS Controls, GitHub e LGPD. Depois pergunta o que só você responde (duas etapas, quem abre o app, planilha compartilhada). Cada item termina em um de três estados, nunca em "está tudo OK". | [seguranca-verificar](seguranca-verificar/) |
+| `/seguranca-verificar` | Assistente de segurança que varre o seu projeto (código, histórico do git, arquivos de credencial e de dado, arquivo de login, modo de permissão do próprio assistente), explica cada achado em linguagem simples e aplica correções de forma automática, seguindo práticas documentadas por OWASP, NIST, CIS Controls, GitHub e LGPD. | [seguranca-verificar](seguranca-verificar/) |
 
 ## O que é isto
 
