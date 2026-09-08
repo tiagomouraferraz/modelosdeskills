@@ -13,6 +13,28 @@ Skill de verificação de segurança pra projeto feito com assistente de IA por 
    sustentam o projeto) e só pergunta o que não dá pra ver por ali, explicando por que pergunta e
    como você descobre a resposta. "Não sei" é sempre resposta válida.
 
+## Isto é pra você?
+
+Uma pergunta resolve: **a pasta do projeto está no seu computador?**
+
+- **Está, e você usa Claude Code, Codex, Cursor ou Gemini CLI** — é pra você, e funciona inteira:
+  ela encontra, explica e corrige com um "ok" seu.
+- **Está, mas você usa o Claude pelo navegador** — funciona pela metade. Você roda a verificação
+  (é um comando só) e cola o resultado no chat: o Claude explica o que apareceu e o que fazer. O
+  que ele não consegue dali é corrigir sozinho; as mudanças ficam com você.
+- **Não está** — você mexe no projeto direto pelo navegador e não tem cópia no computador: não é
+  pra você hoje. Sem a pasta aqui, não existe o que verificar. Se um dia baixar uma cópia pro
+  computador, volta a valer.
+
+**Não importa onde o seu site ou painel está publicado na internet.** O que importa é ter a pasta
+do projeto na máquina.
+
+Ter a pasta no seu computador não é problema de segurança — é como se trabalha normalmente. O que
+importa é o que está dentro dela, e é isso que a verificação olha: inclusive se a pasta está numa
+que sincroniza sozinha com a nuvem, o que faz tudo dali subir junto.
+
+No Windows, é preciso ter o Git for Windows instalado. Se faltar, o assistente avisa e ajuda.
+
 ## Em que se baseia
 
 Nenhuma checagem foi inventada. Cada item corresponde a uma prática documentada em fonte reconhecida
@@ -26,8 +48,8 @@ dessas práticas pra quem não programa; não é certificação nem cobertura co
 
 Roda um script de leitura (`verificar.sh`) que confere se há senha ou chave escrita no código ou
 guardada no histórico do git, se arquivo de credencial está rastreado ou fora do `.gitignore`, se as
-dependências têm versão fixada, se existe proteção de commit, se há arquivo de dado (csv, xlsx, pdf)
-rastreado que possa conter dado de cliente, e se o arquivo que controla login e acesso mudou por
+dependências têm versão fixada, se existe proteção de commit, se sobrou cópia de backup de credencial na pasta (o arquivo que sobrevive a uma troca de chave), se há arquivo de dado (csv, xlsx, pdf)
+rastreado que possa conter dado de cliente, se algum arquivo de credencial está legível por outro usuário da máquina (Mac e Linux), e se o arquivo que controla login e acesso mudou por
 fora desde a última vez (comparação contra uma referência guardada só em hash, nunca em texto).
 Depois pergunta o que só você sabe: repositório privado, verificação em duas etapas nas contas,
 quem abre o app publicado, planilha compartilhada com "qualquer pessoa com o link", acesso de quem
@@ -45,7 +67,7 @@ alcance do agente. Nunca "está tudo OK". Comando que falha vira "erro", não "c
   de um arquivo e fazer o código ler do cofre da plataforma; uma proteção mínima de commit (um
   arquivo na pasta do git, removível a qualquer momento); a lista de aprovação manual do
   assistente; mover o `.env` e arquivos de dado pra fora de pasta sincronizada na nuvem; uma
-  linha de lembrete no arquivo de instruções do projeto; e um commit local no fim.
+  linha de lembrete no arquivo de instruções do projeto; apagar cópia de backup de credencial depois que você confirmar que a chave antiga foi revogada; ajustar a permissão de arquivo de credencial no Mac e Linux; e um commit local no fim.
 - Não mostra o valor de senha ou chave, nem copia pra lugar nenhum.
 - Não faz push e não troca credencial por você. Só reescreve histórico do git num caso, com sua
   confirmação: repositório que nunca foi enviado pra lugar nenhum, com cópia de segurança antes e
@@ -57,6 +79,42 @@ alcance do agente. Nunca "está tudo OK". Comando que falha vira "erro", não "c
 - Não garante proteção contra golpe direcionado, falha da plataforma ou invasão da sua conta por
   fora do projeto. Detector de segredo funciona por formato conhecido: senha simples em variável
   de nome inocente passa.
+
+## O que ela faz de diferente
+
+Achar segredo em código é a parte fácil, e existe ferramenta melhor que esta pra isso — quem
+programa deve usá-la. O problema que esta skill resolve é o outro: **o que fazer depois que o
+alerta aparece.** É aí que quem não programa trava, e é onde ela concentra o trabalho:
+
+- **Nenhum item termina em "está tudo OK".** Cada um sai em um de três estados — verificado e
+  correto, verificado e com problema, ou fora do alcance do agente — sempre com a evidência do
+  que foi olhado. Comando que falha vira "não foi possível verificar", nunca "correto". Isso é o
+  que permite conferir o resultado em vez de acreditar nele.
+- **A ordem certa vem junto.** Segredo exposto não se resolve apagando a linha: primeiro trocar a
+  chave, depois tirar do arquivo, o histórico por último. A skill conduz nessa ordem e explica por
+  que ela não pode ser invertida.
+- **A correção é executada, não recomendada.** O que dá pra corrigir daqui é feito na hora, em
+  primeira pessoa, com o motivo e um "ok" seu — não vira lição de casa sua.
+- **Ela cobre o que só você sabe.** Repositório privado, verificação em duas etapas, quem abre o
+  app publicado, planilha aberta por link, acesso de quem saiu da equipe: nada disso está no
+  código, e ficar de fora do relatório é justamente o que dá a falsa sensação de estar protegido.
+- **Guarda estado entre execuções** e sabe o que mudou desde a última vez, inclusive se o arquivo
+  que controla o login foi alterado por fora.
+
+## Por que não só pedir pro Claude "revisar a segurança"?
+
+Você pode, e vai receber alguma coisa útil. A diferença está em três pontos:
+
+- **A lista é sempre a mesma.** Pedindo solto, cada vez vem uma resposta diferente e você não tem
+  como saber o que ficou de fora. Aqui os itens são fixos, e cada um vem com a evidência do que
+  foi olhado.
+- **Nunca termina em "está tudo OK".** Item que não deu pra verificar sai como "fora do alcance",
+  não como "correto". É isso que te deixa conferir em vez de acreditar.
+- **Ela lembra da última vez.** Guarda o que já foi verificado e avisa, por exemplo, se o arquivo
+  que controla o login mudou desde então. Um pedido solto começa do zero toda vez.
+
+Se você já sabe o que perguntar e o que fazer com a resposta, provavelmente não precisa disto.
+Foi feita pra quem não sabe.
 
 ## Relação com a `/security-review` nativa do Claude Code
 
@@ -84,7 +142,9 @@ Criada em setembro de 2026 pra operação de um gestor de tráfego pago, com um 
 publicado e credenciais em `.env` e no painel de Secrets da hospedagem. Testada em Windows 11 com
 Claude Code pelo VS Code, num projeto de teste com erros colocados de propósito (segredo em código
 e no histórico, `.gitignore` vazio, dependência sem versão, arquivo de acesso adulterado, pasta sem
-git). Não testada em Mac ou Linux, embora os comandos sejam padrão de shell; precisa de `bash`
+git). Em setembro de 2026 foi rodada também em macOS (15.3.1, bash 3.2, grep BSD) num projeto de
+terceiro com 458 arquivos versionados, sem erro de compatibilidade; o retorno dessa execução virou
+correção de precisão dos padrões de detecção na v0.3.3. Linux ainda não foi testado. Precisa de `bash`
 (no Windows, vem com o Git for Windows). Passou por várias rodadas de teste humano (a pessoa
 rodando a skill como usuária, do início ao fim, com cada achado virando correção) e por sete
 rodadas de validação sintética (dois cenários fictícios, um deles simulando o Cursor; comparação

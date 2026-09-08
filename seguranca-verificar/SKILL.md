@@ -4,12 +4,13 @@ description: >
   Assistente de segurança pra projeto feito com assistente de IA (Claude Code, Codex, Cursor,
   Gemini CLI ou outro que leia instrução e rode shell) por quem não programa. Verifica, com script
   de leitura, senha ou chave escrita em código ou guardada no histórico do git, arquivo de
-  credencial rastreado ou fora do .gitignore, dependência sem versão fixada, proteção de commit,
-  arquivo de dado de cliente no git, integridade do arquivo que controla login e acesso contra uma
-  referência guardada só em hash, e o modo de permissão do próprio assistente. Depois pergunta o
-  que só a pessoa sabe (duas etapas, quem abre o app, planilha compartilhada). Cada item termina em
-  um de três estados (verificado e correto, verificado com problema, fora do alcance do agente),
-  nunca em "está tudo OK". Conduz a pessoa do início ao fim: descobre sozinha o que der, explica
+  credencial rastreado ou fora do .gitignore, cópia de backup de credencial esquecida na pasta,
+  dependência sem versão fixada, proteção de commit, arquivo de dado de cliente no git,
+  integridade do arquivo que controla login e acesso contra uma referência guardada só em
+  hash, e o modo de permissão do próprio assistente. Depois pergunta o que só a pessoa sabe
+  (duas etapas, quem abre o app, planilha compartilhada). Cada item termina em um de três
+  estados (verificado e correto, verificado com problema, fora do alcance do agente), nunca
+  em "está tudo OK". Conduz a pessoa do início ao fim: descobre sozinha o que der, explica
   em linguagem simples e em tópicos, recomenda e executa a correção com um "ok". Use quando o
   usuário chamar /seguranca-verificar, disser "confere a segurança do projeto", "roda a checagem
   de segurança", "faz uma auditoria de segurança", ou depois de qualquer mudança real: código
@@ -102,7 +103,7 @@ dita por extenso ("diga ok pra eu <ação>").
   da pasta; tirar segredo de um arquivo (1.1) ou variável pública sensível do navegador (1.9),
   com o código passando a ler do cofre e a pessoa avisada do formato exato a colar; a proteção
   mínima de commit; a lista de aprovação manual (1.10), sempre mesclada ao arquivo existente e a
-  partir da lista real de conectores mostrada antes; mover `.env` e arquivos de dado pra fora de
+  partir da lista real de conectores mostrada antes; apagar cópia de backup de credencial depois de confirmada a revogação da chave antiga (1.11); `chmod 600` em arquivo de credencial no Mac e Linux (1.12); mover `.env` e arquivos de dado pra fora de
   pasta sincronizada; recomeçar histórico de repositório **sem remoto** (condições em 1.2);
   apagar a cópia desse histórico; uma linha no arquivo de instruções (lembrete); commit local
   como último ato.
@@ -160,7 +161,11 @@ Se `.seguranca-verificar/config.md` existir: texto de segunda execução e Passo
 4. **Outra pasta e caminho de publicação.** Antes de perguntar, procurar (só leitura) até três
    níveis em Documentos (inclusive a de dentro do OneDrive no Windows), Área de Trabalho,
    Downloads e a pasta-mãe, por marcadores (`package.json` com o mesmo nome, `requirements.txt` e
-   `app.py`, `vercel.json`, `.git`). Achou: verificar as duas (configuração só na principal, a
+   `app.py`, `vercel.json`, `.git`). Procurar também **para baixo**, dentro da própria pasta
+   aberta: `repositorio_git_em_subpasta` no `--inspecionar` acusa repositório até três níveis
+   abaixo (caso real: raiz sem git com o projeto de verdade uma pasta adentro). Achou repositório
+   em subpasta: dizer com todas as letras que a pasta aberta não é o repositório, e verificar cada
+   um com `--pasta`. Achou: verificar as duas (configuração só na principal, a
    outra em `outras_pastas`, mesmas regras e ok). Não achou: a pergunta de `textos.md`, com
    evidência de onde procurou. "Tem outra, mas não lembro onde": "pendente: localizar" no topo,
    busca ampla na pasta do usuário inteira como ação padrão (nunca deixar a busca com a pessoa), e
@@ -205,6 +210,9 @@ pendentes). Nunca rodar sem a pessoa presente.
 
 Na pasta do projeto: `bash <pasta-da-skill>/verificar.sh`, com `--acesso <arquivo>` quando houver
 arquivo de acesso; `--pasta "<caminho>"` pra cada `outras_pastas`. Saída: `ITEM|ESTADO|EVIDÊNCIA`.
+**`NAO_SE_APLICA` por "pasta sem git" com repositório apontado em subpasta não encerra o assunto:
+é o oposto de "não há o que verificar" — rodar de novo com `--pasta <caminho>` antes de seguir, e
+tratar o resultado de lá como o resultado real dos itens 1.2, 1.3, 1.4 e 1.6.**
 
 | Item | O que confere | Com problema, o assistente |
 | --- | --- | --- |
@@ -213,11 +221,13 @@ arquivo de acesso; `--pasta "<caminho>"` pra cada `outras_pastas`. Saída: `ITEM
 | 1.3 | Arquivo de credencial rastreado (`.env`, `secrets.toml`, `credentials.json`, `token.json`, `.pem`) | tirar do versionamento (`git rm --cached`) e proteger no `.gitignore` |
 | 1.4 | `.gitignore` cobrindo esses arquivos | acrescentar as linhas |
 | 1.5 | Dependência com versão exata (Python) ou lockfile (Node) | informativo: uma frase de por que importa |
-| 1.6 | Hook `pre-commit` varrendo segredo | instalar a proteção mínima (`--instalar-protecao-commit`; se já houver hook de outra origem, o script avisa e não mexe) |
+| 1.6 | Hook `pre-commit` varrendo segredo | instalar a proteção mínima (`--instalar-protecao-commit`; se já houver hook de outra origem, o script avisa e não mexe). Hook desta skill com carimbo de versão antigo é problema: os padrões ficam gravados dentro do hook e não se atualizam sozinhos, então correção de alarme falso só vale depois de reinstalar |
 | 1.7 | Integridade do arquivo de acesso contra a referência em hash, pela versão publicada ou, sem remoto, a cópia local, dizendo qual | mudança não reconhecida: investigar `git log -p` antes de tudo; reconhecida: `--baseline-atualizar`. Com 1.1 sujo: "aguardando 1.1" |
 | 1.8 | Arquivo de dado (csv, xlsx, pdf) rastreado (com git) ou presente (sem git) | com git: tirar do versionamento e proteger pelo nome, mesmo se "fictício"; recomendar guardar fora da pasta ou apagar; histórico como em 1.2; decisão sobre `*.csv`/`*.xlsx` (a proteção de commit não barra dado). Sem git: informa que vai junto em cópia ou sincronização e recomenda guardar fora (ação da pessoa) |
 | 1.9 | Variável pública de frontend com nome sensível | duas mensagens (`textos.md`): primeiro só a mudança de código (gravação no servidor), depois a troca da chave |
 | 1.10 | Modo de permissão do próprio assistente e conectores | no Claude Code a fonte é o que a sessão informa (`settings.json` só confirma `defaultMode`; Bypass ligado na sessão não deixa rastro); sem fonte, perguntar o que o rodapé mostra e gravar "segundo você". Só o modo sem confirmação é problema; Auto e padrão são corretos, uma linha, sem escolha. Conectores sempre da lista real (na sessão, ou nos arquivos de MCP da Portabilidade); sem conseguir ler, perguntar, nunca omitir. O padrão gravado na lista de aprovação é o prefixo real das ferramentas que a sessão mostra (`mcp__<servidor>__*`, copiado), nunca deduzido do nome de exibição; depois de gravar, reler o arquivo e listar os prefixos na evidência do "feito" |
+| 1.11 | Cópia de backup de arquivo de credencial parada na pasta (`.env.bak-<data>`, `.old`, `.orig`, `~`) | é o arquivo que sobrevive a uma troca de chave: a pessoa rotaciona e a credencial antiga segue válida dentro do backup esquecido. Nenhum outro item enxerga (1.1 pula arquivo de credencial, 1.3 só olha o rastreado). Ordem: confirmar no painel do serviço que a chave antiga já foi revogada → só então apagar o arquivo, com ok. Nunca apagar antes de a atual estar funcionando |
+| 1.12 | Permissão do arquivo de credencial (só Mac e Linux) | `chmod 600` com ok. No Windows sai como `NAO_SE_APLICA` com o motivo, nunca omitido |
 
 **Trocar uma credencial = gerar a nova, colocar no cofre, revogar a antiga.** Gerar sozinho não
 invalida a exposta. Revogar derruba na hora qualquer cópia publicada com a chave antiga: é o
@@ -242,8 +252,8 @@ pendências com o caminho, e o estado real cita que ela existe.
 
 Uma mensagem com a frase de resumo ("Terminei. Encontrei 3 pontos de atenção e 5 itens em ordem;
 vamos pelos que importam."), a tabela abaixo e "diga ok pra começarmos pelo mais grave". Depois um
-item por mensagem, nesta ordem: 1.1; 1.3 e 1.8 com 1.4; 1.2 (sem remoto, recomeçar, depois de
-tudo acima); pasta sincronizada; 1.9; 1.6; 1.10; 1.7; 1.5. Em cada item: o que é, por que importa,
+item por mensagem, nesta ordem: 1.1; 1.11; 1.3 e 1.8 com 1.4; 1.2 (sem remoto, recomeçar, depois de
+tudo acima); pasta sincronizada; 1.9; 1.6; 1.10; 1.7; 1.12; 1.5. Em cada item: o que é, por que importa,
 recomendação, ok só se alterar o projeto; "feito" e o próximo.
 
 | Item | Estado | Evidência ou pergunta |

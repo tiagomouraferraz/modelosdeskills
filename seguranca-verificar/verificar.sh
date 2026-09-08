@@ -19,6 +19,7 @@
 # Estados: CORRETO, PROBLEMA, ERRO (comando falhou, não é "correto"), NAO_SE_APLICA, INFO
 
 set -u
+VERSAO="0.3.3"
 MODO=verificar; ACESSO=""; BASE_ACAO=""; PASTA="."
 while [ $# -gt 0 ]; do
   case "$1" in
@@ -38,9 +39,13 @@ TMP=$(mktemp -d 2>/dev/null || mktemp -d -t sv); trap 'rm -rf "$TMP"' EXIT
 export GIT_TERMINAL_PROMPT=0
 
 # Padrões de segredo (formatos conhecidos + atribuição genérica). Ajuste se souber de outro formato.
-P='-----BEGIN [A-Z ]*PRIVATE KEY-----|AKIA[0-9A-Z]{16}|ghp_[A-Za-z0-9]{36}|github_pat_[A-Za-z0-9_]{60,}|AIza[0-9A-Za-z_-]{35}|GOCSPX-[A-Za-z0-9_-]{20,}|sk-[A-Za-z0-9_-]{20,}|[sr]k_live_[A-Za-z0-9]{20,}|sb_(secret|publishable)_[A-Za-z0-9_-]{20,}|EAA[A-Za-z0-9]{40,}|xox[baprs]-[A-Za-z0-9-]{10,}|eyJ[A-Za-z0-9_-]{20,}\.eyJ[A-Za-z0-9_-]{20,}|(postgres|postgresql|mysql|mongodb(\+srv)?|redis)://[^:/[:space:]]+:[^@[:space:]]+@|(senha|password|passwd|secret|token|api_key|apikey)[[:space:]]*[:=][[:space:]]*["'"'"'][^"'"'"']{8,}'
-# Placeholder: linha que contém um destes é exemplo, não segredo.
-PH='exemplo|example|placeholder|troque|substitua|your_|seu_|sua_|xxx+|<[A-Za-z_ -]+>'
+# Borda à esquerda em sk- e EAA: sem ela, "EAA" cai por acaso dentro de qualquer base64 grande
+# (fonte, imagem embutida) e "sk-" cai dentro de nome de classe CSS ("mask-image-..."). O "^[-+]?"
+# deixa passar o sinal de linha de diff, pra varredura de histórico continuar pegando token sozinho na linha.
+P='-----BEGIN [A-Z ]*PRIVATE KEY-----|AKIA[0-9A-Z]{16}|ghp_[A-Za-z0-9]{36}|github_pat_[A-Za-z0-9_]{60,}|AIza[0-9A-Za-z_-]{35}|GOCSPX-[A-Za-z0-9_-]{20,}|(^[-+]?|[^A-Za-z0-9])sk-(proj-)?[A-Za-z0-9]{20,}|[sr]k_live_[A-Za-z0-9]{20,}|sb_(secret|publishable)_[A-Za-z0-9_-]{20,}|(^[-+]?|[^A-Za-z0-9+/])EAA[A-Za-z0-9]{40,}|xox[baprs]-[A-Za-z0-9-]{10,}|eyJ[A-Za-z0-9_-]{20,}\.eyJ[A-Za-z0-9_-]{20,}|(postgres|postgresql|mysql|mongodb(\+srv)?|redis)://[^:/[:space:]]+:[^@[:space:]]+@|(senha|password|passwd|secret|token|api_key|apikey)[[:space:]]*[:=][[:space:]]*["'"'"'][^"'"'"']{8,}'
+# Placeholder: linha que contém um destes é exemplo, não segredo. Aceita hífen e sublinhado
+# ("seu-token-aqui" e "seu_token_aqui"), porque instrução escrita em português usa os dois.
+PH='exemplo|example|placeholder|troque|substitua|your[-_]|seu[-_]|sua[-_]|xxx+|<[A-Za-z_ -]+>'
 # Arquivos que nunca deveriam estar rastreados no git.
 F='(^|/)(\.env(\..*)?|secrets\.toml|credentials\.json|client_secret.*\.json|service-account.*\.json|token\.json|token\.pickle|.*\.pem|.*\.key|.*\.p12)$'
 # Linhas de segurança do arquivo de acesso (pra integridade).
@@ -53,6 +58,11 @@ hash_linhas() { # lê linhas na entrada, imprime um hash curto por linha (nunca 
 }
 
 if git rev-parse --show-toplevel >/dev/null 2>&1; then REPO=1; RAIZ=$(git rev-parse --show-toplevel); else REPO=0; RAIZ=$(pwd); fi
+
+# Repositório em SUBPASTA. Sem isto, uma raiz sem git faz 1.2, 1.3, 1.4 e 1.6 saírem como
+# "não se aplica" — que se lê como "não há o que verificar aqui", quando pode ser o oposto:
+# repositório com remoto, histórico e .gitignore, tudo por verificar, uma pasta abaixo.
+SUB=$(find . -mindepth 2 -maxdepth 4 -type d -name .git 2>/dev/null | sed 's#/\.git$##; s#^\./##' | grep -v node_modules | head -5 | tr '\n' ' ')
 
 # ---------------------------------------------------------------- proteção mínima de commit (item 1.6)
 # Escreve um hook pre-commit pequeno que bloqueia commit com padrão de segredo ou arquivo de
@@ -68,6 +78,7 @@ if [ "$MODO" = protecao ]; then
   {
     echo '#!/bin/sh'
     echo '# Protecao minima de commit instalada pela skill seguranca-verificar (modelosdeskills).'
+    printf '# versao dos padroes: %s\n' "$VERSAO"
     echo '# Bloqueia commit que adicione padrao de senha/chave ou arquivo de credencial. Remover este arquivo desliga a protecao.'
     # os padroes tem aspas simples dentro; escapar pra caber entre aspas simples no hook
     printf "P='%s'\n" "$(printf '%s' "$P" | sed "s/'/'\\\\''/g")"
@@ -93,6 +104,7 @@ if [ "$MODO" = inspecionar ]; then
   else
     out "repositorio_git" "INFO" "nao (pasta sem git)"
   fi
+  out "repositorio_git_em_subpasta" "INFO" "${SUB:-nenhum ate 3 niveis abaixo}"
   cred=$(ls -a 2>/dev/null | grep -iE '^\.env|secret|credential|token\.(json|pickle)' | tr '\n' ' ')
   [ -f .streamlit/secrets.toml ] && cred="$cred .streamlit/secrets.toml"
   out "arquivos_de_credencial_na_pasta" "INFO" "${cred:-nenhum encontrado}"
@@ -146,11 +158,14 @@ else
   # sem git: todos os arquivos da pasta, menos os de credencial (.env e afins), que sao o lugar certo de um segredo
   grep -rnHEI --exclude-dir=.git --exclude-dir=node_modules -e "$P" . 2> "$TMP/11e" | grep -vE "^[^:]*/?($(printf '%s' "$F" | sed 's/^(^|\/)//; s/\$$//'))" > "$TMP/11"
 fi
-grep -viE "$PH" "$TMP/11" | cut -d: -f1,2 > "$TMP/11f"
+# O filtro de placeholder olha só o conteúdo da linha, nunca o "arquivo:linha" na frente dela:
+# um arquivo chamado "exemplo.env" ou "seu-projeto.py" com chave de verdade tem que aparecer.
+so_conteudo() { while IFS= read -r l; do printf '%s' "${l#*:*:}" | grep -qiE "$PH" || printf '%s\n' "$l"; done; }
+so_conteudo < "$TMP/11" | cut -d: -f1,2 > "$TMP/11f"
 # com git: arquivo da pasta que nao esta no git (e nao esta ignorado) tambem vai junto em copia ou nuvem; linha propria
 NAO_RASTREADO=""
 if [ "$REPO" = 1 ]; then
-  git ls-files -z --others --exclude-standard -- . | xargs -0 grep -nHEI -e "$P" 2>/dev/null | grep -vE "^[^:]*/?($(printf '%s' "$F" | sed 's/^(^|\/)//; s/\$$//'))" | grep -viE "$PH" | cut -d: -f1,2 > "$TMP/11n"
+  git ls-files -z --others --exclude-standard -- . | xargs -0 grep -nHEI -e "$P" 2>/dev/null | grep -vE "^[^:]*/?($(printf '%s' "$F" | sed 's/^(^|\/)//; s/\$$//'))" | so_conteudo | cut -d: -f1,2 > "$TMP/11n"
   [ -s "$TMP/11n" ] && NAO_RASTREADO=$(tr '\n' ' ' < "$TMP/11n")
 fi
 LIMPO11=0
@@ -183,9 +198,10 @@ if [ "$REPO" = 1 ]; then
   d=""; for f in .env .streamlit/secrets.toml credentials.json client_secret.json token.json service-account.json; do git check-ignore -q "$f" || d="$d $f"; done
   if [ -n "$d" ]; then out "1.4 .gitignore cobre credencial" "PROBLEMA" "descoberto:$d (correcao segura: adicionar essas linhas ao .gitignore, com sua confirmacao)"; else out "1.4 .gitignore cobre credencial" "CORRETO" "todos cobertos"; fi
 else
-  out "1.2 segredo no historico do git" "NAO_SE_APLICA" "pasta sem git"
-  out "1.3 arquivo de credencial rastreado" "NAO_SE_APLICA" "pasta sem git"
-  out "1.4 .gitignore cobre credencial" "NAO_SE_APLICA" "pasta sem git"
+  if [ -n "$SUB" ]; then AVISO="esta pasta nao tem git, mas ha repositorio em: $SUB(rodar de novo com --pasta pra verificar la dentro)"; else AVISO="pasta sem git"; fi
+  out "1.2 segredo no historico do git" "NAO_SE_APLICA" "$AVISO"
+  out "1.3 arquivo de credencial rastreado" "NAO_SE_APLICA" "$AVISO"
+  out "1.4 .gitignore cobre credencial" "NAO_SE_APLICA" "$AVISO"
 fi
 
 # 1.5 dependência com versão fixada (informativo)
@@ -202,12 +218,23 @@ fi
 if [ "$REPO" = 1 ]; then
   hk="$(git rev-parse --git-path hooks)/pre-commit"
   if [ -f "$hk" ]; then
-    if grep -qiE 'segredo|secret|gitleaks|detect-secrets' "$hk"; then out "1.6 protecao de commit" "CORRETO" "hook pre-commit presente e parece varrer segredo"; else out "1.6 protecao de commit" "INFO" "hook pre-commit existe, mas nao parece varrer segredo (conteudo nao verificado)"; fi
+    if grep -q 'seguranca-verificar' "$hk"; then
+      hv=$(sed -n 's/^# versao dos padroes: //p' "$hk" | head -1)
+      if [ "$hv" = "$VERSAO" ]; then
+        out "1.6 protecao de commit" "CORRETO" "hook pre-commit desta skill instalado, com os padroes da versao atual ($VERSAO)"
+      else
+        out "1.6 protecao de commit" "PROBLEMA" "hook pre-commit desta skill instalado com padroes antigos (${hv:-sem versao}; atual: $VERSAO). Os padroes ficam gravados dentro do hook e nao se atualizam sozinhos: correcao de padrao que gera alarme falso so vale depois de reinstalar com --instalar-protecao-commit"
+      fi
+    elif grep -qiE 'segredo|secret|gitleaks|detect-secrets' "$hk"; then
+      out "1.6 protecao de commit" "CORRETO" "hook pre-commit presente e parece varrer segredo"
+    else
+      out "1.6 protecao de commit" "INFO" "hook pre-commit existe, mas nao parece varrer segredo (conteudo nao verificado)"
+    fi
   else
     out "1.6 protecao de commit" "PROBLEMA" "sem hook pre-commit: nada impede commit de segredo. Este script instala uma protecao minima com --instalar-protecao-commit (so com autorizacao da pessoa)"
   fi
 else
-  out "1.6 protecao de commit" "NAO_SE_APLICA" "pasta sem git"
+  if [ -n "$SUB" ]; then out "1.6 protecao de commit" "NAO_SE_APLICA" "esta pasta nao tem git, mas ha repositorio em: $SUB(rodar de novo com --pasta pra verificar la dentro)"; else out "1.6 protecao de commit" "NAO_SE_APLICA" "pasta sem git"; fi
 fi
 
 # 1.7 integridade do arquivo de acesso
@@ -276,5 +303,33 @@ else
   fv=$(grep -rnE --exclude-dir=.git --exclude-dir=node_modules "$FV" . 2>/dev/null | cut -d: -f1,2 | head -5 | tr '\n' ' ')
 fi
 if [ -n "$fv" ]; then out "1.9 variavel publica de frontend com nome sensivel" "PROBLEMA" "vai pro navegador de qualquer visitante: $fv"; else out "1.9 variavel publica de frontend com nome sensivel" "CORRETO" "nenhuma"; fi
+
+# 1.11 cópia de backup de arquivo de credencial
+# Backup de credencial é o arquivo que sobrevive a uma troca de chave: a pessoa rotaciona, acha
+# que resolveu, e a chave antiga continua válida dentro do .bak esquecido. Nenhum outro item
+# enxerga isso: o 1.1 pula arquivo de credencial (é o lugar certo do segredo) e o 1.3 só olha o
+# que está rastreado no git — e backup normalmente não está.
+BK=$(find . -maxdepth 5 -type f 2>/dev/null | grep -iE '(\.env|secrets\.toml|credentials\.json|client_secret[^/]*\.json|service-account[^/]*\.json|token\.json|\.pem|\.key)[^/]*(\.bak|\.old|\.orig|\.copy|~|[-_.](backup|copia|antigo)|[-_.][0-9]{6,})' | grep -v node_modules | head -10 | tr '\n' ' ')
+if [ -n "$BK" ]; then
+  out "1.11 backup de arquivo de credencial" "PROBLEMA" "copia de credencial parada na pasta: $BK(a chave que esta dentro dela pode continuar valendo mesmo depois de voce trocar a atual; conferir se a antiga ja foi revogada no painel do servico e so entao apagar o arquivo)"
+else
+  out "1.11 backup de arquivo de credencial" "CORRETO" "nenhuma copia de backup de credencial na pasta"
+fi
+
+# 1.12 permissão do arquivo de credencial (só Unix; no Windows não há equivalente direto)
+case "$(uname -s 2>/dev/null)" in
+  MINGW*|MSYS*|CYGWIN*) out "1.12 permissao do arquivo de credencial" "NAO_SE_APLICA" "Windows nao tem equivalente direto da permissao de arquivo do Unix; o controle aqui e quem tem conta na maquina" ;;
+  *)
+    ab=""
+    for f in $(find . -maxdepth 5 -type f 2>/dev/null | grep -iE "$F" | grep -v node_modules | head -10); do
+      p=$(stat -c %a "$f" 2>/dev/null || stat -f %A "$f" 2>/dev/null)
+      case "$p" in 600|400|700|"") ;; *) ab="$ab $f($p)" ;; esac
+    done
+    if [ -n "$ab" ]; then
+      out "1.12 permissao do arquivo de credencial" "PROBLEMA" "legivel por outro usuario da maquina:$ab (correcao: chmod 600 em cada um, com sua confirmacao)"
+    else
+      out "1.12 permissao do arquivo de credencial" "CORRETO" "nenhum arquivo de credencial legivel por outro usuario da maquina"
+    fi ;;
+esac
 
 out "FIM" "INFO" "verificacao concluida em $AQUI"
