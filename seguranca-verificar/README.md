@@ -38,8 +38,8 @@ resolve é o outro problema: **o que fazer depois que o alerta aparece.**
 ## Em que se baseia
 
 Nenhuma checagem foi inventada. Cada item corresponde a uma prática documentada em fonte
-reconhecida: OWASP (Top 10 e Secrets Management Cheat Sheet), NIST (SP 800-53 e SP 800-63B), CIS
-Controls v8, orientações oficiais do GitHub, Twelve-Factor App, e o princípio de minimização de
+reconhecida: OWASP (Top 10 e Secrets Management Cheat Sheet), NIST (SP 800-53 e SP 800-63B-4), CIS
+Controls v8.1, orientações oficiais do GitHub, Twelve-Factor App, e o princípio de minimização de
 dados da LGPD e do GDPR. A fonte de cada checagem está em `bases.md`. O script é uma implementação
 simplificada dessas práticas pra quem não programa; não é certificação.
 
@@ -59,7 +59,8 @@ publicado e credenciais no `.env` e no painel da hospedagem.
 
 Testada em Windows 11 com Claude Code, num projeto com erros colocados de propósito, e em macOS
 (bash 3.2, grep BSD) num projeto de terceiro com 458 arquivos — cujo retorno virou a correção de
-precisão da v0.3.3. Linux ainda não foi testado. Precisa de `bash` (no Windows, vem junto com o
+precisão da v0.3.3. A v0.3.4 (outubro de 2026) atualizou as referências pras edições vigentes (OWASP Top 10:2025, OWASP
+Top 10 for LLM 2025, NIST SP 800-63-4, CIS Controls v8.1), sem mudar as checagens. Linux ainda não foi testado. Precisa de `bash` (no Windows, vem junto com o
 Git for Windows).
 
 Passou por rodadas de teste com pessoas usando de verdade e por sete rodadas de validação com
